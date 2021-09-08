@@ -72,8 +72,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.termflag = False #Currently the 3 states are normal, paused, and terminate run.
             self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
             self.master.protocol("WM_DELETE_WINDOW", self.quit)
-            
-           
+
+
 
         def create_widgets(self): #Creates all the buttons and Visual stuff.
             self.killThreads = False
