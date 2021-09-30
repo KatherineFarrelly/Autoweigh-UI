@@ -5,6 +5,7 @@
 #It also handles file output of the robot data.
 
 #importing all the libraries. Of note are serial and tkinter.
+import sys
 import tkinter as tk
 import serial
 import math
@@ -137,9 +138,9 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
 
     class App(tk.Tk):
-        def quit(self):
+        def quitout(self):
             self.killThreads = True
-            self.destroy
+            app.destroy()
 
         def autoneg(self): #autonegotiation function. This is always running while the GUI is. It connects to the robot serial port.
             while(not self.killThreads):
@@ -179,7 +180,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.pauseflag = False #These are two flag variables I use to handle the program state.
             self.termflag = False #Currently the 3 states are normal, paused, and terminate run.
             self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
-            self.protocol("WM_DELETE_WINDOW", self.quit)
+            self.protocol("WM_DELETE_WINDOW", self.quitout)
 
 
 
@@ -559,7 +560,6 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             if(threading.active_count() <= 2):
                 testthread = threading.Thread(target = self.examplerun)
                 testthread.start()
-
 
     app = App()
     app.mainloop()
