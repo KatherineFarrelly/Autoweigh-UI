@@ -5,8 +5,8 @@
 #It also handles file output of the robot data.
 
 #importing all the libraries. Of note are serial and tkinter.
-import serial
 import tkinter as tk
+import serial
 import math
 import random
 import threading
@@ -14,6 +14,7 @@ import time
 import datetime
 from datetime import datetime
 from serial.tools import list_ports
+
 #This code initializes the serial communication with the arduino
 #There are several phases to opening a serial port. I will describe each on their own line.
 with serial.Serial() as robot: #this creates the serial object "robot" used in the rest of the app.
@@ -23,28 +24,28 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     xposarray = [0, 1270, 2600]
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
 
-    class Maintenance(tk.TopLevel):
+    class Maintenance(tk.Toplevel):
         def __init__(self, master):
             super().__init__(master)
             self.master = master
             self.wm_title("Maintenance Parameters")
             self.geometry("1500x360")
-            self.xpos0 = tk.StringVar()
-            self.xpos1 = tk.StringVar()
-            self.xpos2 = tk.StringVar()
+            self.xposi0 = tk.StringVar()
+            self.xposi1 = tk.StringVar()
+            self.xposi2 = tk.StringVar()
 
-            self.ypos0 = tk.StringVar()
-            self.ypos1 = tk.StringVar()
-            self.ypos2 = tk.StringVar()
-            self.ypos3 = tk.StringVar()
-            self.ypos4 = tk.StringVar()
-            self.ypos5 = tk.StringVar()
-            self.ypos6 = tk.StringVar()
-            self.ypos7 = tk.StringVar()
-            self.ypos8 = tk.StringVar()
-            self.ypos9 = tk.StringVar()
-            self.ypos10 = tk.StringVar()
-            self.ypos11 = tk.StringVar()
+            self.yposi0 = tk.StringVar()
+            self.yposi1 = tk.StringVar()
+            self.yposi2 = tk.StringVar()
+            self.yposi3 = tk.StringVar()
+            self.yposi4 = tk.StringVar()
+            self.yposi5 = tk.StringVar()
+            self.yposi6 = tk.StringVar()
+            self.yposi7 = tk.StringVar()
+            self.yposi8 = tk.StringVar()
+            self.yposi9 = tk.StringVar()
+            self.yposi10 = tk.StringVar()
+            self.yposi11 = tk.StringVar()
 
             self.buttonfont = "Helvetica 24"
 
@@ -54,61 +55,61 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             #setup GUI section for the alphanumeric code entering.
             self.xlab = tk.Label(self,  text='X Positions', font = self.buttonfont)
             self.xlab.grid(column=0, row=0)
-            self.xpos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.xpos0)
+            self.xpos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi0)
             self.xpos1.insert('0', xposarray[0])
             self.xpos1.grid(column=1, row=0)
-            self.xpos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.xpos1)
+            self.xpos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi1)
             self.xpos2.insert('0', xposarray[1])
             self.xpos2.grid(column=2, row=0)
-            self.xpos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.xpos2)
+            self.xpos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi2)
             self.xpos3.insert('0', xposarray[2])
             self.xpos3.grid(column=3, row=0)
 
             self.ylab1 = tk.Label(self,  text='Y Positions 1-3', font = self.buttonfont)
             self.ylab1.grid(column=0, row=1)
-            self.ypos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos0)
+            self.ypos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi0)
             self.ypos1.insert('0', yposarray[0])
             self.ypos1.grid(column=1, row=1)
-            self.ypos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos1)
+            self.ypos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi1)
             self.ypos2.insert('0', yposarray[1])
             self.ypos2.grid(column=2, row=1)
-            self.ypos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos2)
+            self.ypos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi2)
             self.ypos3.insert('0', yposarray[2])
             self.ypos3.grid(column=3, row=1)
 
             self.ylab2 = tk.Label(self,  text='Y Positions 4-6', font = self.buttonfont)
             self.ylab2.grid(column=0, row=2)
-            self.ypos4 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos3)
+            self.ypos4 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi3)
             self.ypos4.insert('0', yposarray[3])
             self.ypos4.grid(column=1, row=2)
-            self.ypos5 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos4)
+            self.ypos5 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi4)
             self.ypos5.insert('0', yposarray[4])
             self.ypos5.grid(column=2, row=2)
-            self.ypos6 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos5)
+            self.ypos6 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi5)
             self.ypos6.insert('0', yposarray[5])
             self.ypos6.grid(column=3, row=2)
 
             self.ylab3 = tk.Label(self,  text='Y Positions 7-9', font = self.buttonfont)
             self.ylab3.grid(column=0, row=3)
-            self.ypos7 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos6)
+            self.ypos7 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi6)
             self.ypos7.insert('0', yposarray[6])
             self.ypos7.grid(column=1, row=3)
-            self.ypos8 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos7)
+            self.ypos8 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi7)
             self.ypos8.insert('0', yposarray[7])
             self.ypos8.grid(column=2, row=3)
-            self.ypos9 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos8)
+            self.ypos9 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi8)
             self.ypos9.insert('0', yposarray[8])
             self.ypos9.grid(column=3, row=3)
 
             self.ylab4 = tk.Label(self,  text='Y Positions 10-12', font = self.buttonfont)
             self.ylab4.grid(column=0, row=4)
-            self.ypos10 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos9)
+            self.ypos10 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi9)
             self.ypos10.insert('0', yposarray[9])
             self.ypos10.grid(column=1, row=4)
-            self.ypos11 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos10)
+            self.ypos11 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi10)
             self.ypos11.insert('0', yposarray[10])
             self.ypos11.grid(column=2, row=4)
-            self.ypos12 = tk.Entry(self, font = self.buttonfont, textvariable = self.ypos11)
+            self.ypos12 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi11)
             self.ypos12.insert('0', yposarray[11])
             self.ypos12.grid(column=3, row=4)
 
@@ -118,12 +119,24 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.okay["command"] = self.set_maintenance
             self.okay.grid(column=0,row=5)
         def set_maintenance(self):
-            xposarray[0] = self.xpos0
+            xposarray[0] = int(self.xposi0.get())
+            xposarray[1] = int(self.xposi1.get())
+            xposarray[2] = int(self.xposi2.get())
+            yposarray[0] = int(self.yposi0.get())
+            yposarray[1] = int(self.yposi1.get())
+            yposarray[2] = int(self.yposi2.get())
+            yposarray[3] = int(self.yposi3.get())
+            yposarray[4] = int(self.yposi4.get())
+            yposarray[5] = int(self.yposi5.get())
+            yposarray[6] = int(self.yposi6.get())
+            yposarray[7] = int(self.yposi7.get())
+            yposarray[8] = int(self.yposi8.get())
+            yposarray[9] = int(self.yposi9.get())
+            yposarray[10] = int(self.yposi10.get())
+            yposarray[11] = int(self.yposi11.get())
 
-    #This class contains the entire GUI functionality of the App.
-    #All your code should be placed inside this class.
-    class Application(tk.Tk):
 
+    class App(tk.Tk):
         def quit(self):
             self.killThreads = True
             self.destroy
@@ -149,10 +162,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 time.sleep(1)
             robot.close()
 
-        def __init__(self, master): #Initializes the main GUI
-            super.__init__()
-            self.master = master
-            self.pack() #I use pack on the main GUI, may change to another packing method.
+        def __init__(self): #Initializes the main GUI
+            super().__init__()
             self.create_widgets()
             #similar to global variables
             self.setentry1= tk.StringVar()
@@ -168,7 +179,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.pauseflag = False #These are two flag variables I use to handle the program state.
             self.termflag = False #Currently the 3 states are normal, paused, and terminate run.
             self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
-            self.master.protocol("WM_DELETE_WINDOW", self.quit)
+            self.protocol("WM_DELETE_WINDOW", self.quit)
 
 
 
@@ -549,6 +560,6 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 testthread = threading.Thread(target = self.examplerun)
                 testthread.start()
 
-    #All the fun stuff for setting up the application GUI.
-    app = Application()
+
+    app = App()
     app.mainloop()
