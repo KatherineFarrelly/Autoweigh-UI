@@ -25,6 +25,82 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     xposarray = [0, 1270, 2600]
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
 
+    class Setup(tk.Toplevel):
+        def __init__(self, master):
+            super().__init__(master)
+            self.master = master
+            self.wm_title("Setup Parameters")
+            self.geometry("800x360")
+            self.buttonfont = "Helvetica 24"
+
+            self.setentry1= tk.StringVar()
+            self.setentry2= tk.StringVar()
+            self.setentry3= tk.StringVar()
+            self.setentry4= tk.StringVar()
+            self.setentry5= tk.StringVar()
+            self.setcheck1= tk.IntVar()
+            self.setcheck2= tk.IntVar()
+            self.setcheck3= tk.IntVar()
+            self.setcheck4= tk.IntVar()
+            self.setcheck5= tk.IntVar()
+
+            self.create_widgets()
+
+        def create_widgets(self):
+            #alphanumberic codes for the runs that can be chosen.
+            optionList = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+            self.v = tk.StringVar(self)
+            self.v.set(optionList[0]) #optionlist that you should be able to type into hopefully.
+
+            #setup GUI section for the alphanumeric code entering.
+            self.label = tk.Label(self,  text='Select Tray Labelling:', font = self.buttonfont)
+            self.label.grid(column=0, row=0) #All of this GUI is setup as a grid.
+
+            self.alphabetical = tk.OptionMenu(self, self.v, *optionList)
+            self.alphabetical.config(font = self.buttonfont)
+            self.alphabetical.grid(column=1, row=0)
+
+            #setup all the entry forms and radio buttons for the number of trays and number of cups per tray.
+            self.traylabel1 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel1.grid(column=0, row=1)
+            self.tray1 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry1)
+            self.tray1.grid(column=1, row=1)
+            self.checktray1 = tk.Checkbutton(self, variable= self.setcheck1)
+            self.checktray1.grid(column=2, row=1)
+
+            self.traylabel2 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel2.grid(column=0, row=2)
+            self.tray2 = tk.Entry(self, font = self.buttonfont,textvariable = self.setentry2)
+            self.tray2.grid(column=1, row=2)
+            self.checktray2 = tk.Checkbutton(self, variable= self.setcheck2)
+            self.checktray2.grid(column=2, row=2)
+
+            self.traylabel3 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel3.grid(column=0, row=3)
+            self.tray3 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry3)
+            self.tray3.grid(column=1, row=3)
+            self.checktray3 = tk.Checkbutton(self, variable= self.setcheck3)
+            self.checktray3.grid(column=2, row=3)
+
+            self.traylabel4 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel4.grid(column=0, row=4)
+            self.tray4 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry4)
+            self.tray4.grid(column=1, row=4)
+            self.checktray4 = tk.Checkbutton(self, variable= self.setcheck4)
+            self.checktray4.grid(column=2, row=4)
+
+            self.traylabel5 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel5.grid(column=0, row=5)
+            self.tray5 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry5)
+            self.tray5.grid(column=1, row=5)
+            self.checktray5 = tk.Checkbutton(self, variable= self.setcheck5)
+            self.checktray5.grid(column=2, row=5)
+
+            #apply setup parameters.
+            self.okay = tk.Button(self, font = self.buttonfont)
+            self.okay["text"] = "Apply"
+            self.okay.grid(column=1,row=6)
+
     class Maintenance(tk.Toplevel):
         def __init__(self, master):
             super().__init__(master)
@@ -167,16 +243,6 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             super().__init__()
             self.create_widgets()
             #similar to global variables
-            self.setentry1= tk.StringVar()
-            self.setentry2= tk.StringVar()
-            self.setentry3= tk.StringVar()
-            self.setentry4= tk.StringVar()
-            self.setentry5= tk.StringVar()
-            self.setcheck1= tk.IntVar()
-            self.setcheck2= tk.IntVar()
-            self.setcheck3= tk.IntVar()
-            self.setcheck4= tk.IntVar()
-            self.setcheck5= tk.IntVar()
             self.pauseflag = False #These are two flag variables I use to handle the program state.
             self.termflag = False #Currently the 3 states are normal, paused, and terminate run.
             self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
@@ -488,63 +554,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
         #This sets up the popup GUI for setup parameters.
         def setup_param(self):
-            popup = tk.Tk() #since this is a separate GUI it needs a separate tk instance.
-            popup.wm_title("Setup Parameters")
-            popup.geometry("800x360")
-            #alphanumberic codes for the runs that can be chosen.
-            optionList = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
-            popup.v = tk.StringVar(popup)
-            popup.v.set(optionList[0]) #optionlist that you should be able to type into hopefully.
+            self.setup_popup = Setup(self) #since this is a separate GUI it needs a separate tk instance.
 
-            #setup GUI section for the alphanumeric code entering.
-            popup.label = tk.Label(popup,  text='Select Tray Labelling:', font = self.buttonfont)
-            popup.label.grid(column=0, row=0) #All of this GUI is setup as a grid.
-
-            popup.alphabetical = tk.OptionMenu(popup, popup.v, *optionList)
-            popup.alphabetical.config(font = self.buttonfont)
-            popup.alphabetical.grid(column=1, row=0)
-
-            #setup all the entry forms and radio buttons for the number of trays and number of cups per tray.
-            popup.traylabel1 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel1.grid(column=0, row=1)
-            popup.tray1 = tk.Entry(popup, font = self.buttonfont, textvariable = self.setentry1)
-            popup.tray1.grid(column=1, row=1)
-            popup.checktray1 = tk.Checkbutton(popup, variable= self.setcheck1)
-            popup.checktray1.grid(column=2, row=1)
-
-            popup.traylabel2 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel2.grid(column=0, row=2)
-            popup.tray2 = tk.Entry(popup, font = self.buttonfont,textvariable = self.setentry2)
-            popup.tray2.grid(column=1, row=2)
-            popup.checktray2 = tk.Checkbutton(popup, variable= self.setcheck2)
-            popup.checktray2.grid(column=2, row=2)
-
-            popup.traylabel3 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel3.grid(column=0, row=3)
-            popup.tray3 = tk.Entry(popup, font = self.buttonfont, textvariable = self.setentry3)
-            popup.tray3.grid(column=1, row=3)
-            popup.checktray3 = tk.Checkbutton(popup, variable= self.setcheck3)
-            popup.checktray3.grid(column=2, row=3)
-
-            popup.traylabel4 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel4.grid(column=0, row=4)
-            popup.tray4 = tk.Entry(popup, font = self.buttonfont, textvariable = self.setentry4)
-            popup.tray4.grid(column=1, row=4)
-            popup.checktray4 = tk.Checkbutton(popup, variable= self.setcheck4)
-            popup.checktray4.grid(column=2, row=4)
-
-            popup.traylabel5 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel5.grid(column=0, row=5)
-            popup.tray5 = tk.Entry(popup, font = self.buttonfont, textvariable = self.setentry5)
-            popup.tray5.grid(column=1, row=5)
-            popup.checktray5 = tk.Checkbutton(popup, variable= self.setcheck5)
-            popup.checktray5.grid(column=2, row=5)
-
-            #apply setup parameters.
-            popup.okay = tk.Button(popup, font = self.buttonfont)
-            popup.okay["text"] = "Apply"
-            popup.okay.grid(column=1,row=6)
-            popup.mainloop()
 
         #This sets up the popup GUI for maintenence parameters.
         def maintenance_param(self):
