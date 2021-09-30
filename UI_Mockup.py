@@ -5,8 +5,9 @@
 #It also handles file output of the robot data.
 
 #importing all the libraries. Of note are serial and tkinter.
-import serial
+import sys
 import tkinter as tk
+import serial
 import math
 import random
 import threading
@@ -14,6 +15,7 @@ import time
 import datetime
 from datetime import datetime
 from serial.tools import list_ports
+
 #This code initializes the serial communication with the arduino
 #There are several phases to opening a serial port. I will describe each on their own line.
 with serial.Serial() as robot: #this creates the serial object "robot" used in the rest of the app.
@@ -23,13 +25,122 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     xposarray = [0, 1270, 2600]
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
 
-    #This class contains the entire GUI functionality of the App.
-    #All your code should be placed inside this class.
-    class Application(tk.Frame):
+    class Maintenance(tk.Toplevel):
+        def __init__(self, master):
+            super().__init__(master)
+            self.master = master
+            self.wm_title("Maintenance Parameters")
+            self.geometry("1500x360")
+            self.xposi0 = tk.StringVar()
+            self.xposi1 = tk.StringVar()
+            self.xposi2 = tk.StringVar()
 
-        def quit(self):
+            self.yposi0 = tk.StringVar()
+            self.yposi1 = tk.StringVar()
+            self.yposi2 = tk.StringVar()
+            self.yposi3 = tk.StringVar()
+            self.yposi4 = tk.StringVar()
+            self.yposi5 = tk.StringVar()
+            self.yposi6 = tk.StringVar()
+            self.yposi7 = tk.StringVar()
+            self.yposi8 = tk.StringVar()
+            self.yposi9 = tk.StringVar()
+            self.yposi10 = tk.StringVar()
+            self.yposi11 = tk.StringVar()
+
+            self.buttonfont = "Helvetica 24"
+
+            self.create_widgets()
+
+        def create_widgets(self):
+            #setup GUI section for the alphanumeric code entering.
+            self.xlab = tk.Label(self,  text='X Positions', font = self.buttonfont)
+            self.xlab.grid(column=0, row=0)
+            self.xpos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi0)
+            self.xpos1.insert('0', xposarray[0])
+            self.xpos1.grid(column=1, row=0)
+            self.xpos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi1)
+            self.xpos2.insert('0', xposarray[1])
+            self.xpos2.grid(column=2, row=0)
+            self.xpos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi2)
+            self.xpos3.insert('0', xposarray[2])
+            self.xpos3.grid(column=3, row=0)
+
+            self.ylab1 = tk.Label(self,  text='Y Positions 1-3', font = self.buttonfont)
+            self.ylab1.grid(column=0, row=1)
+            self.ypos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi0)
+            self.ypos1.insert('0', yposarray[0])
+            self.ypos1.grid(column=1, row=1)
+            self.ypos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi1)
+            self.ypos2.insert('0', yposarray[1])
+            self.ypos2.grid(column=2, row=1)
+            self.ypos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi2)
+            self.ypos3.insert('0', yposarray[2])
+            self.ypos3.grid(column=3, row=1)
+
+            self.ylab2 = tk.Label(self,  text='Y Positions 4-6', font = self.buttonfont)
+            self.ylab2.grid(column=0, row=2)
+            self.ypos4 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi3)
+            self.ypos4.insert('0', yposarray[3])
+            self.ypos4.grid(column=1, row=2)
+            self.ypos5 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi4)
+            self.ypos5.insert('0', yposarray[4])
+            self.ypos5.grid(column=2, row=2)
+            self.ypos6 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi5)
+            self.ypos6.insert('0', yposarray[5])
+            self.ypos6.grid(column=3, row=2)
+
+            self.ylab3 = tk.Label(self,  text='Y Positions 7-9', font = self.buttonfont)
+            self.ylab3.grid(column=0, row=3)
+            self.ypos7 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi6)
+            self.ypos7.insert('0', yposarray[6])
+            self.ypos7.grid(column=1, row=3)
+            self.ypos8 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi7)
+            self.ypos8.insert('0', yposarray[7])
+            self.ypos8.grid(column=2, row=3)
+            self.ypos9 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi8)
+            self.ypos9.insert('0', yposarray[8])
+            self.ypos9.grid(column=3, row=3)
+
+            self.ylab4 = tk.Label(self,  text='Y Positions 10-12', font = self.buttonfont)
+            self.ylab4.grid(column=0, row=4)
+            self.ypos10 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi9)
+            self.ypos10.insert('0', yposarray[9])
+            self.ypos10.grid(column=1, row=4)
+            self.ypos11 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi10)
+            self.ypos11.insert('0', yposarray[10])
+            self.ypos11.grid(column=2, row=4)
+            self.ypos12 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi11)
+            self.ypos12.insert('0', yposarray[11])
+            self.ypos12.grid(column=3, row=4)
+
+            #apply setup parameters.
+            self.okay = tk.Button(self, font = self.buttonfont)
+            self.okay["text"] = "Apply"
+            self.okay["command"] = self.set_maintenance
+            self.okay.grid(column=0,row=5)
+        def set_maintenance(self):
+            xposarray[0] = int(self.xposi0.get())
+            xposarray[1] = int(self.xposi1.get())
+            xposarray[2] = int(self.xposi2.get())
+            yposarray[0] = int(self.yposi0.get())
+            yposarray[1] = int(self.yposi1.get())
+            yposarray[2] = int(self.yposi2.get())
+            yposarray[3] = int(self.yposi3.get())
+            yposarray[4] = int(self.yposi4.get())
+            yposarray[5] = int(self.yposi5.get())
+            yposarray[6] = int(self.yposi6.get())
+            yposarray[7] = int(self.yposi7.get())
+            yposarray[8] = int(self.yposi8.get())
+            yposarray[9] = int(self.yposi9.get())
+            yposarray[10] = int(self.yposi10.get())
+            yposarray[11] = int(self.yposi11.get())
+
+
+    class App(tk.Tk):
+        def quitout(self):
             self.killThreads = True
-            root.destroy()
+            app.destroy()
 
         def autoneg(self): #autonegotiation function. This is always running while the GUI is. It connects to the robot serial port.
             while(not self.killThreads):
@@ -52,26 +163,24 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 time.sleep(1)
             robot.close()
 
-        def __init__(self, master=None): #Initializes the main GUI
-            super().__init__(master)
-            self.master = master
-            self.pack() #I use pack on the main GUI, may change to another packing method.
+        def __init__(self): #Initializes the main GUI
+            super().__init__()
             self.create_widgets()
             #similar to global variables
-            self.setentry1='36'
-            self.setentry2='36'
-            self.setentry3='36'
-            self.setentry4='36'
-            self.setentry5='36'
-            self.setcheck1= 0
-            self.setcheck2= 0
-            self.setcheck3= 0
-            self.setcheck4= 0
-            self.setcheck5= 0
+            self.setentry1= tk.StringVar()
+            self.setentry2= tk.StringVar()
+            self.setentry3= tk.StringVar()
+            self.setentry4= tk.StringVar()
+            self.setentry5= tk.StringVar()
+            self.setcheck1= tk.IntVar()
+            self.setcheck2= tk.IntVar()
+            self.setcheck3= tk.IntVar()
+            self.setcheck4= tk.IntVar()
+            self.setcheck5= tk.IntVar()
             self.pauseflag = False #These are two flag variables I use to handle the program state.
             self.termflag = False #Currently the 3 states are normal, paused, and terminate run.
             self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
-            self.master.protocol("WM_DELETE_WINDOW", self.quit)
+            self.protocol("WM_DELETE_WINDOW", self.quitout)
 
 
 
@@ -105,14 +214,19 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.calibrate["command"] = self.term_button
             self.calibrate.place(x = 415, y = 700)
 
+            self.testrun = tk.Button(self, font = self.buttonfont)
+            self.testrun["text"] = "Test Run"
+            self.testrun["command"] = self.test_button
+            self.testrun.place(x = 580, y = 700)
+
             self.connect = tk.Button(self, font = self.buttonfont)
             self.connect["text"] = "Disconnected"
             self.connect["bg"] = "red"
-            self.connect.place(x = 645, y = 700)
+            self.connect.place(x = 750, y = 700)
 
             self.maintenance = tk.Button(self, font = self.buttonfont)
             self.maintenance["text"] = "Maintenance"
-            self.maintenance["command"] = self.term_button
+            self.maintenance["command"] = self.maintenance_param
             self.maintenance.place(x = 5, y = 800)
 
             self.setup = tk.Button(self, font = self.buttonfont)
@@ -220,7 +334,43 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             file.close()
 
 
-
+        def examplerun(self):
+            x = 0
+            y = 0
+            for j in range(15): #resets all the cup colors and weights.
+                for k in range(12):
+                    self.tray.itemconfig(self.samples[j][k], fill = "gray")
+                    self.tray.itemconfig(self.sampletext[j][k], text = "0")
+            while(not self.killThreads):
+                while(self.pauseflag): #While loop that basically holds the program while it is paused.
+                    time.sleep(.5)
+                    if(self.termflag): #I still want to be able to terminate while paused so i copied the code.
+                        for j in range(15): #resets all the cup colors and weights.
+                            for k in range(12):
+                                self.tray.itemconfig(self.samples[j][k], fill = "gray")
+                                self.tray.itemconfig(self.sampletext[j][k], text = "0")
+                        self.termflag = False #puts UI back in normal state after term routine is finished, then exits loop.
+                        self.pauseflag = False
+                        return
+                if(self.termflag): #same as above, just for when the run is unpaused.
+                    for j in range(15): #resets all the cup colors and weights.
+                        for k in range(12):
+                            self.tray.itemconfig(self.samples[j][k], fill = "gray")
+                            self.tray.itemconfig(self.sampletext[j][k], text = "0")
+                    self.termflag = False
+                    return
+                self.write_to_sample(x, y) #calls write to sample 5 times because there are 5 claws that make measurements.
+                self.write_to_sample(x+3, y)
+                self.write_to_sample(x+6, y)
+                self.write_to_sample(x+9, y)
+                self.write_to_sample(x+12, y)
+                time.sleep(.1)
+                x = x+1
+                if(x > 2):
+                    x = 0
+                    y = y+1
+                if(y > 11):
+                    return
 
         #This function handles all robot communications.
         #It's a bit complex at the moment. There are several parts.
@@ -242,7 +392,10 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
             s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
 
-
+            for j in range(15): #resets all the cup colors and weights.
+                for k in range(12):
+                    self.tray.itemconfig(self.samples[j][k], fill = "gray")
+                    self.tray.itemconfig(self.sampletext[j][k], text = "0")
             #This loops until we either terminate the run or the run finishes. I use 'return' to exit the loop.
             while(not self.killThreads):
                 while(self.pauseflag): #While loop that basically holds the program while it is paused.
@@ -251,10 +404,10 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                         if(i > 2):
                             cmd = bytes('hh', 'utf-8') #This ensures the claws are in the idle position so they dont consume power.
                             robot.write(cmd)
-                        for x in range(15): #resets all the cup colors and weights.
-                            for y in range(12):
-                                self.tray.itemconfig(self.samples[x][y], fill = "gray")
-                                self.tray.itemconfig(self.sampletext[x][y], text = "0")
+                        for j in range(15): #resets all the cup colors and weights.
+                            for k in range(12):
+                                self.tray.itemconfig(self.samples[j][k], fill = "gray")
+                                self.tray.itemconfig(self.sampletext[j][k], text = "0")
                         self.termflag = False #puts UI back in normal state after term routine is finished, then exits loop.
                         self.pauseflag = False
                         return
@@ -262,10 +415,10 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     if(i > 2):
                         cmd = bytes('hh', 'utf-8')
                         robot.write(cmd)
-                    for x in range(15):
-                        for y in range(12):
-                            self.tray.itemconfig(self.samples[x][y], fill = "gray")
-                            self.tray.itemconfig(self.sampletext[x][y], text = "0")
+                    for j in range(15): #resets all the cup colors and weights.
+                        for k in range(12):
+                            self.tray.itemconfig(self.samples[j][k], fill = "gray")
+                            self.tray.itemconfig(self.sampletext[j][k], text = "0")
                     self.termflag = False
                     return
                 #okay this is a bit complicated.
@@ -333,13 +486,9 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 if(i > 4): #go back to the first state if we reached last state.
                     i = 0
 
-            self.data_output()
-
-
-
         #This sets up the popup GUI for setup parameters.
         def setup_param(self):
-            popup = tk.Tk(); #since this is a separate GUI it needs a separate tk instance.
+            popup = tk.Tk() #since this is a separate GUI it needs a separate tk instance.
             popup.wm_title("Setup Parameters")
             popup.geometry("800x360")
             #alphanumberic codes for the runs that can be chosen.
@@ -397,17 +546,20 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             popup.okay.grid(column=1,row=6)
             popup.mainloop()
 
+        #This sets up the popup GUI for maintenence parameters.
+        def maintenance_param(self):
+            self.maintenance_popup = Maintenance(self)
+
         #when the run button is pressed it begins a thread that handles the robot serial function.
         def run_button(self):
             if((threading.active_count() <= 2) and not self.disconnected):
                 serthread = threading.Thread(target = self.robotSer)
                 serthread.start()
 
+        def test_button(self):
+            if(threading.active_count() <= 2):
+                testthread = threading.Thread(target = self.examplerun)
+                testthread.start()
 
-
-
-    #All the fun stuff for setting up the application GUI.
-    root = tk.Tk()
-    root.geometry("1100x900")
-    app = Application(master=root)
+    app = App()
     app.mainloop()
