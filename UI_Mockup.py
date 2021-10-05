@@ -130,63 +130,64 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
         def create_widgets(self):
             #setup GUI section for the alphanumeric code entering.
+            vcmd = (self.register(self.validate)) #command that gets issued when a command box is edited to make sure only integers get written
             self.xlab = tk.Label(self,  text='X Positions', font = self.buttonfont)
             self.xlab.grid(column=0, row=0)
-            self.xpos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi0)
+            self.xpos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi0, validate = 'key', validatecommand = (vcmd, '%P'))
             self.xpos1.insert('0', xposarray[0])
             self.xpos1.grid(column=1, row=0)
-            self.xpos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi1)
+            self.xpos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi1, validate = 'key', validatecommand = (vcmd, '%P'))
             self.xpos2.insert('0', xposarray[1])
             self.xpos2.grid(column=2, row=0)
-            self.xpos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi2)
+            self.xpos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi2, validate = 'key', validatecommand = (vcmd, '%P'))
             self.xpos3.insert('0', xposarray[2])
             self.xpos3.grid(column=3, row=0)
 
             self.ylab1 = tk.Label(self,  text='Y Positions 1-3', font = self.buttonfont)
             self.ylab1.grid(column=0, row=1)
-            self.ypos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi0)
+            self.ypos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi0, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos1.insert('0', yposarray[0])
             self.ypos1.grid(column=1, row=1)
-            self.ypos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi1)
+            self.ypos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi1, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos2.insert('0', yposarray[1])
             self.ypos2.grid(column=2, row=1)
-            self.ypos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi2)
+            self.ypos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi2, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos3.insert('0', yposarray[2])
             self.ypos3.grid(column=3, row=1)
 
             self.ylab2 = tk.Label(self,  text='Y Positions 4-6', font = self.buttonfont)
             self.ylab2.grid(column=0, row=2)
-            self.ypos4 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi3)
+            self.ypos4 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi3, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos4.insert('0', yposarray[3])
             self.ypos4.grid(column=1, row=2)
-            self.ypos5 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi4)
+            self.ypos5 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi4, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos5.insert('0', yposarray[4])
             self.ypos5.grid(column=2, row=2)
-            self.ypos6 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi5)
+            self.ypos6 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi5, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos6.insert('0', yposarray[5])
             self.ypos6.grid(column=3, row=2)
 
             self.ylab3 = tk.Label(self,  text='Y Positions 7-9', font = self.buttonfont)
             self.ylab3.grid(column=0, row=3)
-            self.ypos7 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi6)
+            self.ypos7 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi6, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos7.insert('0', yposarray[6])
             self.ypos7.grid(column=1, row=3)
-            self.ypos8 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi7)
+            self.ypos8 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi7, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos8.insert('0', yposarray[7])
             self.ypos8.grid(column=2, row=3)
-            self.ypos9 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi8)
+            self.ypos9 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi8, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos9.insert('0', yposarray[8])
             self.ypos9.grid(column=3, row=3)
 
             self.ylab4 = tk.Label(self,  text='Y Positions 10-12', font = self.buttonfont)
             self.ylab4.grid(column=0, row=4)
-            self.ypos10 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi9)
+            self.ypos10 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi9, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos10.insert('0', yposarray[9])
             self.ypos10.grid(column=1, row=4)
-            self.ypos11 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi10)
+            self.ypos11 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi10, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos11.insert('0', yposarray[10])
             self.ypos11.grid(column=2, row=4)
-            self.ypos12 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi11)
+            self.ypos12 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi11, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos12.insert('0', yposarray[11])
             self.ypos12.grid(column=3, row=4)
 
@@ -195,6 +196,13 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.okay["text"] = "Apply"
             self.okay["command"] = self.set_maintenance
             self.okay.grid(column=0,row=5)
+
+        def validate(self, P): #ensures entered character is an integer
+            if str.isdigit(P) or P == "":
+                return True
+            else:
+                return False
+
         def set_maintenance(self):
             xposarray[0] = int(self.xposi0.get())
             xposarray[1] = int(self.xposi1.get())
@@ -214,7 +222,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
 
     class App(tk.Tk):
-        def quitout(self):
+        def quitout(self): #kills all threads then exits
             self.killThreads = True
             app.destroy()
 
@@ -239,23 +247,43 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 time.sleep(1)
             robot.close()
 
+        def alert_loop(self):
+            while(not self.killThreads):
+                if(self.CommErrorFlag):
+                    self.tray.configure(bg='red')
+                    time.sleep(1)
+                elif(self.doneFlag):
+                    self.tray.configure(bg='green')
+                    time.sleep(1)
+                self.tray.configure(bg='white')
+                time.sleep(1)
+
         def __init__(self): #Initializes the main GUI
             super().__init__()
+            self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
+            self.doneFlag = False
+            self.CommErrorFlag = False
+            self.EntryErrorFlag = False
+            self.killThreads = False
+            autoneg = threading.Thread(target = self.autoneg)
+            autoneg.start()
             self.create_widgets()
             #similar to global variables
             self.pauseflag = False #These are two flag variables I use to handle the program state.
             self.termflag = False #Currently the 3 states are normal, paused, and terminate run.
-            self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
             self.protocol("WM_DELETE_WINDOW", self.quitout)
 
 
 
         def create_widgets(self): #Creates all the buttons and Visual stuff.
-            self.killThreads = False
 
             #GUI size and fonts
             self.tray = tk.Canvas(self, width = "1000", height = "900")
             self.tray.pack()
+
+            alert = threading.Thread(target = self.alert_loop)
+            alert.start()
+
             self.buttonfont = "Helvetica 24"
             self.buttonfontmain = "Helvetica 36"
 
@@ -319,8 +347,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     self.samples[x][y] = self.tray.create_oval((200 * math.floor(x/3)) + (55 * (x % 3)) + 5, 55 * y + 5, (200 * math.floor(x/3)) + (55 * (x % 3)) + 55, 55 * y + 55, fill = "gray")
                     self.sampletext[x][y] = self.tray.create_text((200 * math.floor(x/3)) + (55 * (x % 3)) + 30, 55 * y + 30, text = "0", justify = tk.CENTER, font = "Helvetica 16")
                     self.sampleweight[x][y] = 0
-            autoneg = threading.Thread(target = self.autoneg)
-            autoneg.start()
+
 
         def write_to_file(self):
             writefile = threading.Thread(target = self.data_output)
@@ -436,6 +463,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     x = 0
                     y = y+1
                 if(y > 11):
+                    self.doneFlag = True
                     return
 
         #This function handles all robot communications.
@@ -545,6 +573,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                         s = robot.read().decode('utf-8')
                         cmd = bytes('rr', 'utf-8')
                         robot.write(cmd)
+                        self.doneFlag = True
                         return
                 while(s != 'D'): #waits until robot ACK received before going to the next state. Robot ACKs after completing a command.
                     s = robot.read().decode('utf-8')
@@ -563,12 +592,14 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
         #when the run button is pressed it begins a thread that handles the robot serial function.
         def run_button(self):
-            if((threading.active_count() <= 2) and not self.disconnected):
+            self.doneFlag = False
+            if((threading.active_count() <= 3) and not self.disconnected):
                 serthread = threading.Thread(target = self.robotSer)
                 serthread.start()
 
         def test_button(self):
-            if(threading.active_count() <= 2):
+            self.doneFlag = False
+            if(threading.active_count() <= 3):
                 testthread = threading.Thread(target = self.examplerun)
                 testthread.start()
 
