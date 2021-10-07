@@ -25,6 +25,82 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     xposarray = [0, 1270, 2600]
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
 
+    class Setup(tk.Toplevel):
+        def __init__(self, master):
+            super().__init__(master)
+            self.master = master
+            self.wm_title("Setup Parameters")
+            self.geometry("800x360")
+            self.buttonfont = "Helvetica 24"
+
+            self.setentry1= tk.StringVar()
+            self.setentry2= tk.StringVar()
+            self.setentry3= tk.StringVar()
+            self.setentry4= tk.StringVar()
+            self.setentry5= tk.StringVar()
+            self.setcheck1= tk.IntVar()
+            self.setcheck2= tk.IntVar()
+            self.setcheck3= tk.IntVar()
+            self.setcheck4= tk.IntVar()
+            self.setcheck5= tk.IntVar()
+
+            self.create_widgets()
+
+        def create_widgets(self):
+            #alphanumberic codes for the runs that can be chosen.
+            optionList = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
+            self.v = tk.StringVar(self)
+            self.v.set(optionList[0]) #optionlist that you should be able to type into hopefully.
+
+            #setup GUI section for the alphanumeric code entering.
+            self.label = tk.Label(self,  text='Select Tray Labelling:', font = self.buttonfont)
+            self.label.grid(column=0, row=0) #All of this GUI is setup as a grid.
+
+            self.alphabetical = tk.OptionMenu(self, self.v, *optionList)
+            self.alphabetical.config(font = self.buttonfont)
+            self.alphabetical.grid(column=1, row=0)
+
+            #setup all the entry forms and radio buttons for the number of trays and number of cups per tray.
+            self.traylabel1 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel1.grid(column=0, row=1)
+            self.tray1 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry1)
+            self.tray1.grid(column=1, row=1)
+            self.checktray1 = tk.Checkbutton(self, variable= self.setcheck1)
+            self.checktray1.grid(column=2, row=1)
+
+            self.traylabel2 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel2.grid(column=0, row=2)
+            self.tray2 = tk.Entry(self, font = self.buttonfont,textvariable = self.setentry2)
+            self.tray2.grid(column=1, row=2)
+            self.checktray2 = tk.Checkbutton(self, variable= self.setcheck2)
+            self.checktray2.grid(column=2, row=2)
+
+            self.traylabel3 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel3.grid(column=0, row=3)
+            self.tray3 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry3)
+            self.tray3.grid(column=1, row=3)
+            self.checktray3 = tk.Checkbutton(self, variable= self.setcheck3)
+            self.checktray3.grid(column=2, row=3)
+
+            self.traylabel4 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel4.grid(column=0, row=4)
+            self.tray4 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry4)
+            self.tray4.grid(column=1, row=4)
+            self.checktray4 = tk.Checkbutton(self, variable= self.setcheck4)
+            self.checktray4.grid(column=2, row=4)
+
+            self.traylabel5 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
+            self.traylabel5.grid(column=0, row=5)
+            self.tray5 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry5)
+            self.tray5.grid(column=1, row=5)
+            self.checktray5 = tk.Checkbutton(self, variable= self.setcheck5)
+            self.checktray5.grid(column=2, row=5)
+
+            #apply setup parameters.
+            self.okay = tk.Button(self, font = self.buttonfont)
+            self.okay["text"] = "Apply"
+            self.okay.grid(column=1,row=6)
+
     class Maintenance(tk.Toplevel):
         def __init__(self, master):
             super().__init__(master)
@@ -54,63 +130,64 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
         def create_widgets(self):
             #setup GUI section for the alphanumeric code entering.
+            vcmd = (self.register(self.validate)) #command that gets issued when a command box is edited to make sure only integers get written
             self.xlab = tk.Label(self,  text='X Positions', font = self.buttonfont)
             self.xlab.grid(column=0, row=0)
-            self.xpos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi0)
+            self.xpos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi0, validate = 'key', validatecommand = (vcmd, '%P'))
             self.xpos1.insert('0', xposarray[0])
             self.xpos1.grid(column=1, row=0)
-            self.xpos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi1)
+            self.xpos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi1, validate = 'key', validatecommand = (vcmd, '%P'))
             self.xpos2.insert('0', xposarray[1])
             self.xpos2.grid(column=2, row=0)
-            self.xpos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi2)
+            self.xpos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.xposi2, validate = 'key', validatecommand = (vcmd, '%P'))
             self.xpos3.insert('0', xposarray[2])
             self.xpos3.grid(column=3, row=0)
 
             self.ylab1 = tk.Label(self,  text='Y Positions 1-3', font = self.buttonfont)
             self.ylab1.grid(column=0, row=1)
-            self.ypos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi0)
+            self.ypos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi0, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos1.insert('0', yposarray[0])
             self.ypos1.grid(column=1, row=1)
-            self.ypos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi1)
+            self.ypos2 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi1, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos2.insert('0', yposarray[1])
             self.ypos2.grid(column=2, row=1)
-            self.ypos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi2)
+            self.ypos3 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi2, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos3.insert('0', yposarray[2])
             self.ypos3.grid(column=3, row=1)
 
             self.ylab2 = tk.Label(self,  text='Y Positions 4-6', font = self.buttonfont)
             self.ylab2.grid(column=0, row=2)
-            self.ypos4 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi3)
+            self.ypos4 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi3, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos4.insert('0', yposarray[3])
             self.ypos4.grid(column=1, row=2)
-            self.ypos5 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi4)
+            self.ypos5 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi4, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos5.insert('0', yposarray[4])
             self.ypos5.grid(column=2, row=2)
-            self.ypos6 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi5)
+            self.ypos6 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi5, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos6.insert('0', yposarray[5])
             self.ypos6.grid(column=3, row=2)
 
             self.ylab3 = tk.Label(self,  text='Y Positions 7-9', font = self.buttonfont)
             self.ylab3.grid(column=0, row=3)
-            self.ypos7 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi6)
+            self.ypos7 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi6, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos7.insert('0', yposarray[6])
             self.ypos7.grid(column=1, row=3)
-            self.ypos8 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi7)
+            self.ypos8 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi7, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos8.insert('0', yposarray[7])
             self.ypos8.grid(column=2, row=3)
-            self.ypos9 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi8)
+            self.ypos9 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi8, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos9.insert('0', yposarray[8])
             self.ypos9.grid(column=3, row=3)
 
             self.ylab4 = tk.Label(self,  text='Y Positions 10-12', font = self.buttonfont)
             self.ylab4.grid(column=0, row=4)
-            self.ypos10 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi9)
+            self.ypos10 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi9, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos10.insert('0', yposarray[9])
             self.ypos10.grid(column=1, row=4)
-            self.ypos11 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi10)
+            self.ypos11 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi10, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos11.insert('0', yposarray[10])
             self.ypos11.grid(column=2, row=4)
-            self.ypos12 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi11)
+            self.ypos12 = tk.Entry(self, font = self.buttonfont, textvariable = self.yposi11, validate = 'key', validatecommand = (vcmd, '%P'))
             self.ypos12.insert('0', yposarray[11])
             self.ypos12.grid(column=3, row=4)
 
@@ -119,6 +196,13 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.okay["text"] = "Apply"
             self.okay["command"] = self.set_maintenance
             self.okay.grid(column=0,row=5)
+
+        def validate(self, P): #ensures entered character is an integer
+            if str.isdigit(P) or P == "":
+                return True
+            else:
+                return False
+
         def set_maintenance(self):
             xposarray[0] = int(self.xposi0.get())
             xposarray[1] = int(self.xposi1.get())
@@ -138,7 +222,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
 
     class App(tk.Tk):
-        def quitout(self):
+        def quitout(self): #kills all threads then exits
             self.killThreads = True
             app.destroy()
 
@@ -163,33 +247,43 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 time.sleep(1)
             robot.close()
 
+        def alert_loop(self):
+            while(not self.killThreads):
+                if(self.CommErrorFlag):
+                    self.tray.configure(bg='red')
+                    time.sleep(1)
+                elif(self.doneFlag):
+                    self.tray.configure(bg='green')
+                    time.sleep(1)
+                self.tray.configure(bg='white')
+                time.sleep(1)
+
         def __init__(self): #Initializes the main GUI
             super().__init__()
+            self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
+            self.doneFlag = False
+            self.CommErrorFlag = False
+            self.EntryErrorFlag = False
+            self.killThreads = False
+            autoneg = threading.Thread(target = self.autoneg)
+            autoneg.start()
             self.create_widgets()
             #similar to global variables
-            self.setentry1= tk.StringVar()
-            self.setentry2= tk.StringVar()
-            self.setentry3= tk.StringVar()
-            self.setentry4= tk.StringVar()
-            self.setentry5= tk.StringVar()
-            self.setcheck1= tk.IntVar()
-            self.setcheck2= tk.IntVar()
-            self.setcheck3= tk.IntVar()
-            self.setcheck4= tk.IntVar()
-            self.setcheck5= tk.IntVar()
             self.pauseflag = False #These are two flag variables I use to handle the program state.
             self.termflag = False #Currently the 3 states are normal, paused, and terminate run.
-            self.disconnected = True #this variable determines if the robot is connected or not. This is so we are safe from communication errors.
             self.protocol("WM_DELETE_WINDOW", self.quitout)
 
 
 
         def create_widgets(self): #Creates all the buttons and Visual stuff.
-            self.killThreads = False
 
             #GUI size and fonts
             self.tray = tk.Canvas(self, width = "1000", height = "900")
             self.tray.pack()
+
+            alert = threading.Thread(target = self.alert_loop)
+            alert.start()
+
             self.buttonfont = "Helvetica 24"
             self.buttonfontmain = "Helvetica 36"
 
@@ -253,8 +347,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     self.samples[x][y] = self.tray.create_oval((200 * math.floor(x/3)) + (55 * (x % 3)) + 5, 55 * y + 5, (200 * math.floor(x/3)) + (55 * (x % 3)) + 55, 55 * y + 55, fill = "gray")
                     self.sampletext[x][y] = self.tray.create_text((200 * math.floor(x/3)) + (55 * (x % 3)) + 30, 55 * y + 30, text = "0", justify = tk.CENTER, font = "Helvetica 16")
                     self.sampleweight[x][y] = 0
-            autoneg = threading.Thread(target = self.autoneg)
-            autoneg.start()
+
 
         def write_to_file(self):
             writefile = threading.Thread(target = self.data_output)
@@ -370,6 +463,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     x = 0
                     y = y+1
                 if(y > 11):
+                    self.doneFlag = True
                     return
 
         #This function handles all robot communications.
@@ -479,6 +573,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                         s = robot.read().decode('utf-8')
                         cmd = bytes('rr', 'utf-8')
                         robot.write(cmd)
+                        self.doneFlag = True
                         return
                 while(s != 'D'): #waits until robot ACK received before going to the next state. Robot ACKs after completing a command.
                     s = robot.read().decode('utf-8')
@@ -488,63 +583,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
         #This sets up the popup GUI for setup parameters.
         def setup_param(self):
-            popup = tk.Tk() #since this is a separate GUI it needs a separate tk instance.
-            popup.wm_title("Setup Parameters")
-            popup.geometry("800x360")
-            #alphanumberic codes for the runs that can be chosen.
-            optionList = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
-            popup.v = tk.StringVar(popup)
-            popup.v.set(optionList[0]) #optionlist that you should be able to type into hopefully.
+            self.setup_popup = Setup(self) #since this is a separate GUI it needs a separate tk instance.
 
-            #setup GUI section for the alphanumeric code entering.
-            popup.label = tk.Label(popup,  text='Select Tray Labelling:', font = self.buttonfont)
-            popup.label.grid(column=0, row=0) #All of this GUI is setup as a grid.
-
-            popup.alphabetical = tk.OptionMenu(popup, popup.v, *optionList)
-            popup.alphabetical.config(font = self.buttonfont)
-            popup.alphabetical.grid(column=1, row=0)
-
-            #setup all the entry forms and radio buttons for the number of trays and number of cups per tray.
-            popup.traylabel1 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel1.grid(column=0, row=1)
-            popup.tray1 = tk.Entry(popup, font = self.buttonfont, textvariable = self.setentry1)
-            popup.tray1.grid(column=1, row=1)
-            popup.checktray1 = tk.Checkbutton(popup, variable= self.setcheck1)
-            popup.checktray1.grid(column=2, row=1)
-
-            popup.traylabel2 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel2.grid(column=0, row=2)
-            popup.tray2 = tk.Entry(popup, font = self.buttonfont,textvariable = self.setentry2)
-            popup.tray2.grid(column=1, row=2)
-            popup.checktray2 = tk.Checkbutton(popup, variable= self.setcheck2)
-            popup.checktray2.grid(column=2, row=2)
-
-            popup.traylabel3 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel3.grid(column=0, row=3)
-            popup.tray3 = tk.Entry(popup, font = self.buttonfont, textvariable = self.setentry3)
-            popup.tray3.grid(column=1, row=3)
-            popup.checktray3 = tk.Checkbutton(popup, variable= self.setcheck3)
-            popup.checktray3.grid(column=2, row=3)
-
-            popup.traylabel4 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel4.grid(column=0, row=4)
-            popup.tray4 = tk.Entry(popup, font = self.buttonfont, textvariable = self.setentry4)
-            popup.tray4.grid(column=1, row=4)
-            popup.checktray4 = tk.Checkbutton(popup, variable= self.setcheck4)
-            popup.checktray4.grid(column=2, row=4)
-
-            popup.traylabel5 = tk.Label(popup,  text='Select Tray Numbering:', font = self.buttonfont)
-            popup.traylabel5.grid(column=0, row=5)
-            popup.tray5 = tk.Entry(popup, font = self.buttonfont, textvariable = self.setentry5)
-            popup.tray5.grid(column=1, row=5)
-            popup.checktray5 = tk.Checkbutton(popup, variable= self.setcheck5)
-            popup.checktray5.grid(column=2, row=5)
-
-            #apply setup parameters.
-            popup.okay = tk.Button(popup, font = self.buttonfont)
-            popup.okay["text"] = "Apply"
-            popup.okay.grid(column=1,row=6)
-            popup.mainloop()
 
         #This sets up the popup GUI for maintenence parameters.
         def maintenance_param(self):
@@ -552,12 +592,14 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
         #when the run button is pressed it begins a thread that handles the robot serial function.
         def run_button(self):
-            if((threading.active_count() <= 2) and not self.disconnected):
+            self.doneFlag = False
+            if((threading.active_count() <= 3) and not self.disconnected):
                 serthread = threading.Thread(target = self.robotSer)
                 serthread.start()
 
         def test_button(self):
-            if(threading.active_count() <= 2):
+            self.doneFlag = False
+            if(threading.active_count() <= 3):
                 testthread = threading.Thread(target = self.examplerun)
                 testthread.start()
 
