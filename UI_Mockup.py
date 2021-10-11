@@ -24,6 +24,9 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     #These arrays are dvided into separate X and Y arrays to take up less space.
     xposarray = [0, 1270, 2600]
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
+    checkarray = [1,1,1,1,1]
+    cuparray = [36,36,36,36,36]
+    alphavar = ['AA']
 
     class Setup(tk.Toplevel):
         def __init__(self, master):
@@ -33,6 +36,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.geometry("800x360")
             self.buttonfont = "Helvetica 24"
 
+            self.optionvar = tk.StringVar()
             self.setentry1= tk.StringVar()
             self.setentry2= tk.StringVar()
             self.setentry3= tk.StringVar()
@@ -47,59 +51,108 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.create_widgets()
 
         def create_widgets(self):
-            #alphanumberic codes for the runs that can be chosen.
-            optionList = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
-            self.v = tk.StringVar(self)
-            self.v.set(optionList[0]) #optionlist that you should be able to type into hopefully.
+            vcmd = (self.register(self.validate)) #command that gets issued when a command box is edited to make sure only integers get written
+            vcmda = (self.register(self.validatealpha)) #same as above for only letters
 
             #setup GUI section for the alphanumeric code entering.
             self.label = tk.Label(self,  text='Select Tray Labelling:', font = self.buttonfont)
             self.label.grid(column=0, row=0) #All of this GUI is setup as a grid.
 
-            self.alphabetical = tk.OptionMenu(self, self.v, *optionList)
-            self.alphabetical.config(font = self.buttonfont)
+            self.alphabetical = tk.Entry(self, font = self.buttonfont, textvariable = self.optionvar, validate = 'key', validatecommand = (vcmda, '%P'))
+            self.alphabetical.insert('0', alphavar[0])
             self.alphabetical.grid(column=1, row=0)
 
             #setup all the entry forms and radio buttons for the number of trays and number of cups per tray.
             self.traylabel1 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
             self.traylabel1.grid(column=0, row=1)
-            self.tray1 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry1)
+            self.tray1 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry1, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.tray1.insert('0', cuparray[0])
             self.tray1.grid(column=1, row=1)
             self.checktray1 = tk.Checkbutton(self, variable= self.setcheck1)
+            if(checkarray[0] == 1):
+                self.checktray1.select()
+            else:
+                self.checktray1.deselect()
             self.checktray1.grid(column=2, row=1)
 
             self.traylabel2 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
             self.traylabel2.grid(column=0, row=2)
-            self.tray2 = tk.Entry(self, font = self.buttonfont,textvariable = self.setentry2)
+            self.tray2 = tk.Entry(self, font = self.buttonfont,textvariable = self.setentry2, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.tray2.insert('0', cuparray[1])
             self.tray2.grid(column=1, row=2)
             self.checktray2 = tk.Checkbutton(self, variable= self.setcheck2)
+            if(checkarray[1] == 1):
+                self.checktray2.select()
+            else:
+                self.checktray2.deselect()
             self.checktray2.grid(column=2, row=2)
 
             self.traylabel3 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
             self.traylabel3.grid(column=0, row=3)
-            self.tray3 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry3)
+            self.tray3 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry3, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.tray3.insert('0', cuparray[2])
             self.tray3.grid(column=1, row=3)
             self.checktray3 = tk.Checkbutton(self, variable= self.setcheck3)
+            if(checkarray[2] == 1):
+                self.checktray3.select()
+            else:
+                self.checktray3.deselect()
             self.checktray3.grid(column=2, row=3)
 
             self.traylabel4 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
             self.traylabel4.grid(column=0, row=4)
-            self.tray4 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry4)
+            self.tray4 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry4, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.tray4.insert('0', cuparray[3])
             self.tray4.grid(column=1, row=4)
             self.checktray4 = tk.Checkbutton(self, variable= self.setcheck4)
+            if(checkarray[3] == 1):
+                self.checktray4.select()
+            else:
+                self.checktray4.deselect()
             self.checktray4.grid(column=2, row=4)
 
             self.traylabel5 = tk.Label(self,  text='Select Tray Numbering:', font = self.buttonfont)
             self.traylabel5.grid(column=0, row=5)
-            self.tray5 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry5)
+            self.tray5 = tk.Entry(self, font = self.buttonfont, textvariable = self.setentry5, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.tray5.insert('0', cuparray[4])
             self.tray5.grid(column=1, row=5)
             self.checktray5 = tk.Checkbutton(self, variable= self.setcheck5)
+            if(checkarray[4] == 1):
+                self.checktray5.select()
+            else:
+                self.checktray5.deselect()
             self.checktray5.grid(column=2, row=5)
 
             #apply setup parameters.
             self.okay = tk.Button(self, font = self.buttonfont)
             self.okay["text"] = "Apply"
+            self.okay["command"] = self.set_setup
             self.okay.grid(column=1,row=6)
+
+        def validate(self, P): #ensures entered character is an integer
+            if str.isdigit(P) or P == "":
+                return True
+            else:
+                return False
+
+        def validatealpha(self, P): #ensures entered character is an integer
+            if (str.isalpha(P) and str.isupper(P)) or P == "":
+                return True
+            else:
+                return False
+
+        def set_setup(self):
+            alphavar[0] = str(self.optionvar.get())
+            checkarray[0] = int(self.setcheck1.get())
+            checkarray[1] = int(self.setcheck2.get())
+            checkarray[2] = int(self.setcheck3.get())
+            checkarray[3] = int(self.setcheck4.get())
+            checkarray[4] = int(self.setcheck5.get())
+            cuparray[0] = int(self.setentry1.get())
+            cuparray[1] = int(self.setentry2.get())
+            cuparray[2] = int(self.setentry3.get())
+            cuparray[3] = int(self.setentry4.get())
+            cuparray[4] = int(self.setentry5.get())
 
     class Maintenance(tk.Toplevel):
         def __init__(self, master):
@@ -379,50 +432,70 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.sampleweight[x][y] = weight
 
         def data_output(self):
+            #Turn off the completion alert
+            self.doneFlag = False
             #First we create a text file with proper formatting to be written to.
             now = datetime.now() #Gets the date and time
             dt = now.strftime("%y_%m_%d Time_%Hh%Mm%Ss") #Formats dte and time for filename purposes
-            traytxt1 = "AA" #Initial tray of the run. Temporary variable: should be replaced with traytxt from setup parameters
-            tray1 = traytxt1 #String that holds tray alphanumerics
-            tray2 = "AB" #These trays are just examples. Each one should have its own corresponding traytxt(number) derived from the setup parameters
-            tray3 = "AC"
-            tray4 = "AD"
-            tray5 = "AE"
+            tray1 = alphavar[0] #String that holds tray alphanumerics
             cupnumber = 1 #Initial cup of the run. Temporary variable: Should be replaced with cupnumber from setup parameters
             cup = '{0:05d}'.format(cupnumber) #Formats cup number properly
             filename = tray1 + cup + "_" + dt + ".txt" #collates the information into the proper file name
-            file = open(r"./Data_Testing/"+filename, "w") #Creates a file with the correct name
+            file = open(r"./Output_Data/"+filename, "w") #Creates a file with the correct name
             file.write("***********************************\n") #This and the next few lines create the header for the text file
             file.write("        Weight Data File\n")
             file.write("***********************************\n")
             file.write("\n")
             file.write("Sample, Weight\n")
             file.write("\n")
-            for x in range(3): #These for loops iterate over the sampletext matrix,
-                for y in range(12):
-                    file.write(tray1 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
-                    cupnumber = cupnumber + 1
-                    cup = '{0:05d}'.format(cupnumber)
-            for x in range(3, 6):
-                for y in range(12):
-                    file.write(tray2 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
-                    cupnumber = cupnumber + 1
-                    cup = '{0:05d}'.format(cupnumber)
-            for x in range (6, 9):
-                for y in range(12):
-                    file.write(tray3 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
-                    cupnumber = cupnumber + 1
-                    cup = '{0:05d}'.format(cupnumber)
-            for x in range(9, 12):
-                for y in range(12):
-                    file.write(tray4 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
-                    cupnumber = cupnumber + 1
-                    cup = '{0:05d}'.format(cupnumber)
-            for x in range (12, 15):
-                for y in range(12):
-                    file.write(tray5 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
-                    cupnumber = cupnumber + 1
-                    cup = '{0:05d}'.format(cupnumber)
+            if(checkarray[0] == 1):
+                for x in range(3): #These for loops iterate over the sampletext matrix,
+                    for y in range(12):
+                        if(cuparray[0] > 12*x + y):
+                            file.write(tray1 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
+                            cupnumber = cupnumber + 1
+                            cup = '{0:05d}'.format(cupnumber)
+            if(checkarray[1] == 1):
+                for x in range(3, 6):
+                    for y in range(12):
+                        if(cuparray[1] > 12*(x-3) + y):
+                            file.write(tray1 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
+                            cupnumber = cupnumber + 1
+                            cup = '{0:05d}'.format(cupnumber)
+            if(checkarray[2] == 1):
+                for x in range(6, 9):
+                    for y in range(12):
+                        if(cuparray[2] > 12*(x-6) + y):
+                            file.write(tray1 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
+                            cupnumber = cupnumber + 1
+                            cup = '{0:05d}'.format(cupnumber)
+            if(checkarray[3] == 1):
+                for x in range(9, 12):
+                    for y in range(12):
+                        if(cuparray[3] > 12*(x-9) + y):
+                            file.write(tray1 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
+                            cupnumber = cupnumber + 1
+                            cup = '{0:05d}'.format(cupnumber)
+            if(checkarray[4] == 1):
+                for x in range(12, 15):
+                    for y in range(12):
+                        if(cuparray[4] > 12*(x-12) + y):
+                            file.write(tray1 + cup + ",  " + str(self.sampleweight[x][y]) + "\n")
+                            cupnumber = cupnumber + 1
+                            cup = '{0:05d}'.format(cupnumber)
+
+            ENC_TYPE = 'ascii'
+            s = bytearray(tray1, ENC_TYPE)
+            if(s[1] == ord('Z')):
+                s[1] = ord('A')
+                if(s[0] == ord('Z')):
+                    alphavar[0] = 'AA'
+                else:
+                    s[0] = s[0] + 1
+                    alphavar[0] = s.decode(ENC_TYPE)
+            else:
+                s[1] = s[1] + 1
+                alphavar[0] = s.decode(ENC_TYPE)
 
             file.close()
 
@@ -458,11 +531,12 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 self.write_to_sample(x+9, y)
                 self.write_to_sample(x+12, y)
                 time.sleep(.1)
-                x = x+1
-                if(x > 2):
-                    x = 0
-                    y = y+1
+                y = y+1
                 if(y > 11):
+                    y = 0
+                    x = x+1
+
+                if(x > 2):
                     self.doneFlag = True
                     return
 
