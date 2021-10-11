@@ -26,7 +26,271 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
     checkarray = [1,1,1,1,1]
     cuparray = [36,36,36,36,36]
+    zeroarray = [0,0,0,0,0]
+    tarearray = [0.0,0.0,0.0,0.0,0.0]
     alphavar = ['AA']
+    zeroflags = [0,0,0,0,0]
+    tareflags = [0,0,0,0,0]
+    weightfloat = [50]
+    disconnected = [True]
+
+    class Calibrate(tk.Toplevel):
+        def __init__(self, master):
+            super().__init__(master)
+            self.master = master
+            self.wm_title("Setup Parameters")
+            self.geometry("1000x440")
+            self.buttonfont = "Helvetica 24"
+
+            self.loadcellflag = 0 #decides which load cells to read from. 0 reads all 5 load cells.
+            self.weightvar = tk.StringVar()
+            #all the variables for displaying the zero and tare values
+            self.zeroloadcell1 = tk.StringVar()
+            self.zeroloadcell2 = tk.StringVar()
+            self.zeroloadcell3 = tk.StringVar()
+            self.zeroloadcell4 = tk.StringVar()
+            self.zeroloadcell5 = tk.StringVar()
+            self.tareloadcell1 = tk.StringVar()
+            self.tareloadcell2 = tk.StringVar()
+            self.tareloadcell3 = tk.StringVar()
+            self.tareloadcell4 = tk.StringVar()
+            self.tareloadcell5 = tk.StringVar()
+            self.create_widgets()
+
+        def create_widgets(self):
+            vcmd = (self.register(self.validate)) #command that gets issued when a command box is edited to make sure only integers get written
+
+            self.zeroloadcell1.set(zeroarray[0])
+            self.zeroloadcell2.set(zeroarray[1])
+            self.zeroloadcell3.set(zeroarray[2])
+            self.zeroloadcell4.set(zeroarray[3])
+            self.zeroloadcell5.set(zeroarray[4])
+
+            self.tareloadcell1.set(tarearray[0])
+            self.tareloadcell2.set(tarearray[1])
+            self.tareloadcell3.set(tarearray[2])
+            self.tareloadcell4.set(tarearray[3])
+            self.tareloadcell5.set(tarearray[4])
+
+            self.zerolabel = tk.Label(self, text = 'Zero Value', font = self.buttonfont)
+            self.zerolabel.grid(column=1, row=0)
+            self.tarelabel = tk.Label(self, text = 'Tare Value', font = self.buttonfont)
+            self.tarelabel.grid(column=2, row=0)
+
+            self.labelcell1 = tk.Label(self, text = 'Load Cell 1', font = self.buttonfont)
+            self.labelcell1.grid(column=0, row=1)
+            self.labelcell2 = tk.Label(self, text = 'Load Cell 2', font = self.buttonfont)
+            self.labelcell2.grid(column=0, row=2)
+            self.labelcell3 = tk.Label(self, text = 'Load Cell 3', font = self.buttonfont)
+            self.labelcell3.grid(column=0, row=3)
+            self.labelcell4 = tk.Label(self, text = 'Load Cell 4', font = self.buttonfont)
+            self.labelcell4.grid(column=0, row=4)
+            self.labelcell5 = tk.Label(self, text = 'Load Cell 5', font = self.buttonfont)
+            self.labelcell5.grid(column=0, row=5)
+
+            self.zerocelllabel1 = tk.Label(self, textvariable = self.zeroloadcell1, font = self.buttonfont)
+            self.zerocelllabel1.grid(column=1,row=1)
+            self.zerocelllabel2 = tk.Label(self, textvariable = self.zeroloadcell2, font = self.buttonfont)
+            self.zerocelllabel2.grid(column=1,row=2)
+            self.zerocelllabel3 = tk.Label(self, textvariable = self.zeroloadcell3, font = self.buttonfont)
+            self.zerocelllabel3.grid(column=1,row=3)
+            self.zerocelllabel4 = tk.Label(self, textvariable = self.zeroloadcell4, font = self.buttonfont)
+            self.zerocelllabel4.grid(column=1,row=4)
+            self.zerocelllabel5 = tk.Label(self, textvariable = self.zeroloadcell5, font = self.buttonfont)
+            self.zerocelllabel5.grid(column=1,row=5)
+
+            self.tarecelllabel1 = tk.Label(self, textvariable = self.tareloadcell1, font = self.buttonfont)
+            self.tarecelllabel1.grid(column=2,row=1)
+            self.tarecelllabel2 = tk.Label(self, textvariable = self.tareloadcell2, font = self.buttonfont)
+            self.tarecelllabel2.grid(column=2,row=2)
+            self.tarecelllabel3 = tk.Label(self, textvariable = self.tareloadcell3, font = self.buttonfont)
+            self.tarecelllabel3.grid(column=2,row=3)
+            self.tarecelllabel4 = tk.Label(self, textvariable = self.tareloadcell4, font = self.buttonfont)
+            self.tarecelllabel4.grid(column=2,row=4)
+            self.tarecelllabel5 = tk.Label(self, textvariable = self.tareloadcell5, font = self.buttonfont)
+            self.tarecelllabel5.grid(column=2,row=5)
+
+            self.weightlabel = tk.Label(self, text = 'Tare Weight:', font = self.buttonfont)
+            self.weightlabel.grid(column=0,row=7)
+            self.weightentry = tk.Entry(self, font = self.buttonfont, textvariable = self.weightvar, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.weightentry.insert('0', weightfloat[0])
+            self.weightentry.grid(column=1, row=7)
+
+            self.zeroall = tk.Button(self, font = self.buttonfont)
+            self.zeroall["text"] = "Zero All Load Cells"
+            self.zeroall["command"] = self.zero_all_cells
+            self.zeroall.grid(column=1,row=6)
+
+            self.tarecell1 = tk.Button(self, font = self.buttonfont)
+            self.tarecell1["text"] = "Tare Load Cell 1"
+            self.tarecell1["command"] = self.tare_cell_one
+            self.tarecell1.grid(column=3,row=1)
+
+            self.tarecell2 = tk.Button(self, font = self.buttonfont)
+            self.tarecell2["text"] = "Tare Load Cell 2"
+            self.tarecell2["command"] = self.tare_cell_two
+            self.tarecell2.grid(column=3,row=2)
+
+            self.tarecell3 = tk.Button(self, font = self.buttonfont)
+            self.tarecell3["text"] = "Tare Load Cell 3"
+            self.tarecell3["command"] = self.tare_cell_three
+            self.tarecell3.grid(column=3,row=3)
+
+            self.tarecell4 = tk.Button(self, font = self.buttonfont)
+            self.tarecell4["text"] = "Tare Load Cell 4"
+            self.tarecell4["command"] = self.tare_cell_four
+            self.tarecell4.grid(column=3,row=4)
+
+            self.tarecell5 = tk.Button(self, font = self.buttonfont)
+            self.tarecell5["text"] = "Tare Load Cell 5"
+            self.tarecell5["command"] = self.tare_cell_five
+            self.tarecell5.grid(column=3,row=5)
+
+        def calibrateSer(self):
+            robot.reset_input_buffer() #This flushes the serial buffer.
+            cmd = bytes('nn', 'utf-8')
+            robot.write(cmd)
+            s = ''
+            tempstr = ""
+            while(s != 'D'): #clearing buffer before issuing commands
+                s = robot.read().decode('utf-8')
+
+            if(self.loadcellflag == 0 or self.loadcellflag == 1):
+                cmd = bytes('t1t', 'utf-8') #all UART communications must be made as UTF-8 encoded byte strings. This command resets the robot.
+                robot.write(cmd) #Write to serial buffer.
+                while(s != 'N'):
+                    s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
+                    if(s != 'N'):
+                        tempstr += s
+                while(s != 'D'): #waits until robot ACK received before going to the next state. Robot ACKs after completing a command.
+                    s = robot.read().decode('utf-8')
+                if(self.loadcellflag == 0):
+                    zeroarray[0] = int(tempstr)
+                    self.zeroloadcell1.set(int(tempstr))
+                    zeroflags[0] = 1
+                elif(zeroflags[0] == 1):
+                    tareflags[0] = 1
+                    tarearray[0] = (float(tempstr) - float(zeroarray[0])) / float(weightfloat[0])
+                    self.tareloadcell1.set(str(tarearray[0]))
+
+            if(self.loadcellflag == 0 or self.loadcellflag == 2):
+                tempstr = ""
+                cmd = bytes('t2t', 'utf-8')
+                robot.write(cmd)
+                while(s != 'N'):
+                    s = robot.read().decode('utf-8')
+                    if(s != 'N'):
+                        tempstr += s
+                while(s != 'D'):
+                    s = robot.read().decode('utf-8')
+                if(self.loadcellflag == 0):
+                    zeroarray[1] = int(tempstr)
+                    self.zeroloadcell2.set(int(tempstr))
+                    zeroflags[1] = 1
+                elif(zeroflags[1] == 1):
+                    tareflags[1] = 1
+                    tarearray[1] = (float(tempstr) - float(zeroarray[1])) / float(weightfloat[0])
+                    self.tareloadcell2.set(str(tarearray[1]))
+
+            if(self.loadcellflag == 0 or self.loadcellflag == 3):
+                tempstr = ""
+                cmd = bytes('t3t', 'utf-8')
+                robot.write(cmd)
+                while(s != 'N'):
+                    s = robot.read().decode('utf-8')
+                    if(s != 'N'):
+                        tempstr += s
+                while(s != 'D'):
+                    s = robot.read().decode('utf-8')
+                if(self.loadcellflag == 0):
+                    zeroarray[2] = int(tempstr)
+                    self.zeroloadcell3.set(int(tempstr))
+                    zeroflags[2] = 1
+                elif(zeroflags[2] == 1):
+                    tareflags[2] = 1
+                    tarearray[2] = (float(tempstr) - float(zeroarray[2])) / float(weightfloat[0])
+                    self.tareloadcell3.set(str(tarearray[2]))
+
+            if(self.loadcellflag == 0 or self.loadcellflag == 4):
+                tempstr = ""
+                cmd = bytes('t4t', 'utf-8') #she's just like me!
+                robot.write(cmd)
+                while(s != 'N'):
+                    s = robot.read().decode('utf-8')
+                    if(s != 'N'):
+                        tempstr += s
+                while(s != 'D'):
+                    s = robot.read().decode('utf-8')
+                if(self.loadcellflag == 0):
+                    zeroarray[3] = int(tempstr)
+                    self.zeroloadcell4.set(int(tempstr))
+                    zeroflags[3] = 1
+                elif(zeroflags[3] == 1):
+                    tareflags[3] = 1
+                    tarearray[3] = (float(tempstr) - float(zeroarray[3])) / float(weightfloat[0])
+                    self.tareloadcell4.set(str(tarearray[3]))
+
+            if(self.loadcellflag == 0 or self.loadcellflag == 5):
+                tempstr = ""
+                cmd = bytes('t5t', 'utf-8')
+                robot.write(cmd)
+                while(s != 'N'):
+                    s = robot.read().decode('utf-8')
+                    if(s != 'N'):
+                        tempstr += s
+                while(s != 'D'):
+                    s = robot.read().decode('utf-8')
+                if(self.loadcellflag == 0):
+                    zeroarray[4] = int(tempstr)
+                    self.zeroloadcell5.set(int(tempstr))
+                    zeroflags[4] = 1
+                elif(zeroflags[4] == 1):
+                    tareflags[4] = 1
+                    tarearray[4] = (float(tempstr) - float(zeroarray[4])) / float(weightfloat[0])
+                    self.tareloadcell5.set(str(tarearray[4]))
+
+        def zero_all_cells(self):
+            self.loadcellflag = 0
+            if((threading.active_count() <= 3) and not disconnected[0]):
+                serthread = threading.Thread(target = self.calibrateSer)
+                serthread.start()
+
+        def tare_cell_one(self):
+            self.loadcellflag = 1
+            if((threading.active_count() <= 3) and not disconnected[0]):
+                serthread = threading.Thread(target = self.calibrateSer)
+                serthread.start()
+
+        def tare_cell_two(self):
+            self.loadcellflag = 2
+            if((threading.active_count() <= 3) and not disconnected[0]):
+                serthread = threading.Thread(target = self.calibrateSer)
+                serthread.start()
+
+        def tare_cell_three(self):
+            self.loadcellflag = 3
+            if((threading.active_count() <= 3) and not disconnected[0]):
+                serthread = threading.Thread(target = self.calibrateSer)
+                serthread.start()
+
+        def tare_cell_four(self):
+            self.loadcellflag = 4
+            if((threading.active_count() <= 3) and not disconnected[0]):
+                serthread = threading.Thread(target = self.calibrateSer)
+                serthread.start()
+
+        def tare_cell_five(self):
+            self.loadcellflag = 5
+            if((threading.active_count() <= 3) and not disconnected[0]):
+                serthread = threading.Thread(target = self.calibrateSer)
+                serthread.start()
+
+        def validate(self, P): #ensures entered character is an integer
+            if str.isdigit(P) or P == "":
+                weightfloat[0] = P
+                return True
+            else:
+                return False
 
     class Setup(tk.Toplevel):
         def __init__(self, master):
@@ -292,10 +556,12 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                             robot.baudrate = 9600 #sets baud rate. This can be a constant.
                             robot.open() #opens the serial port. This function only opens if the port is valid and not in use.
                             self.disconnected = False
+                            disconnected[0] = False
                             self.connect.configure(text = "Connected", bg = "green")
                 if(not self.arduinoflag): #device was disconnected, update status.
                     robot.close()
                     self.disconnected = True
+                    disconnected[0] = True
                     self.connect.configure(text = "Disconnected", bg = "red")
                 time.sleep(1)
             robot.close()
@@ -358,7 +624,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
             self.calibrate = tk.Button(self, font = self.buttonfont)
             self.calibrate["text"] = "Calibrate"
-            self.calibrate["command"] = self.term_button
+            self.calibrate["command"] = self.calibrate_cells
             self.calibrate.place(x = 415, y = 700)
 
             self.testrun = tk.Button(self, font = self.buttonfont)
@@ -401,10 +667,10 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     self.sampletext[x][y] = self.tray.create_text((200 * math.floor(x/3)) + (55 * (x % 3)) + 30, 55 * y + 30, text = "0", justify = tk.CENTER, font = "Helvetica 16")
                     self.sampleweight[x][y] = 0
 
-
         def write_to_file(self):
-            writefile = threading.Thread(target = self.data_output)
-            writefile.start()
+            if(self.doneFlag == True):
+                writefile = threading.Thread(target = self.data_output)
+                writefile.start()
 
         #The termination button sets the GUI into termination state.
         def term_button(self):
@@ -420,8 +686,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
         #This function generates fake weight data and writes it to the GUI array.
         #It also handles the cup colors, so when we implement customs cup colors we need to make sure
         #The cup colors are not constants like they are right now.
-        def write_to_sample(self, x, y): #takes x and y position in array as parameters.
-            weight = round(random.gauss(50, 5), 2) #generates a random number based on gaussian distribution.
+        def write_to_sample(self, x, y, weight): #takes x and y position in array as parameters.
             color = "green"
             if weight < 45: #oh yeah these weight comparison values also should not be constants.
                 color = "red"
@@ -525,11 +790,16 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                             self.tray.itemconfig(self.sampletext[j][k], text = "0")
                     self.termflag = False
                     return
-                self.write_to_sample(x, y) #calls write to sample 5 times because there are 5 claws that make measurements.
-                self.write_to_sample(x+3, y)
-                self.write_to_sample(x+6, y)
-                self.write_to_sample(x+9, y)
-                self.write_to_sample(x+12, y)
+                if(checkarray[0] == 1 and (cuparray[0] > 12*x + y)):
+                    self.write_to_sample(x, y, round(random.gauss(50, 5), 2)) #generates a random number based on gaussian distribution.) #calls write to sample 5 times because there are 5 claws that make measurements.
+                if(checkarray[1] == 1 and (cuparray[1] > 12*x + y)):
+                    self.write_to_sample(x+3, y, round(random.gauss(50, 5), 2))
+                if(checkarray[2] == 1 and (cuparray[2] > 12*x + y)):
+                    self.write_to_sample(x+6, y, round(random.gauss(50, 5), 2))
+                if(checkarray[3] == 1 and (cuparray[3] > 12*x + y)):
+                    self.write_to_sample(x+9, y, round(random.gauss(50, 5), 2))
+                if(checkarray[4] == 1 and (cuparray[4] > 12*x + y)):
+                    self.write_to_sample(x+12, y, round(random.gauss(50, 5), 2))
                 time.sleep(.1)
                 y = y+1
                 if(y > 11):
@@ -554,6 +824,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             xpos = 0
             ypos = 0
             i = 0
+            tmpstr = ""
             robot.reset_input_buffer() #This flushes the serial buffer.
             cmd = bytes('rr', 'utf-8') #all UART communications must be made as UTF-8 encoded byte strings. This command resets the robot.
             robot.write(cmd) #Write to serial buffer.
@@ -624,24 +895,34 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 elif(i == 2): #this turns on the claw solenoids.
                     cmdstring = 'yy'
                 elif(i == 3): #this tells the robot to make a weight measurement.
-                    cmdstring = 'nn'
+                    cmdstring = 'zz'
                 cmd = bytes(cmdstring, 'utf-8') #writes cmdstring to the UART buffer.
                 robot.write(cmd)
                 time.sleep(.5) #Pause between each iteration to prevent robot from moving between states too quickly.
-
                 s = robot.read().decode('utf-8') #reads ACKS and data from robot.
-                if(s == 'N'): #right now 'N' stands for "I got data!" This needs to be changed so that the app can collect actual numerical data sent by the robot.
-                    self.write_to_sample(x, y) #calls write to sample 5 times because there are 5 claws that make measurements.
-                    self.write_to_sample(x+3, y)
-                    self.write_to_sample(x+6, y)
-                    self.write_to_sample(x+9, y)
-                    self.write_to_sample(x+12, y)
-                    if(x >= 2): #after making a measurement we go to the next x or y based on what the current robot positon is.
-                        y = y+1
-                        x = 0
-                    else:
+                if(s != 'D'):
+                    while(s != 'N'):
+                        tmpstr += s
+                        s = robot.read().decode('utf-8')
+                    celloutput = tmpstr.split()
+                    tmpstr = ""
+                    if(tareflags[0] == 1 and checkarray[0] == 1 and (cuparray[0] > 12*x + y)):
+                        self.write_to_sample(x, y, round(float(int(celloutput[0]) - zeroarray[0]) / tarearray[0], 2)) #calls write to sample 5 times because there are 5 claws that make measurements.
+                    if(tareflags[1] == 1 and checkarray[1] == 1 and (cuparray[1] > 12*x + y)):
+                        self.write_to_sample(x+3, y, round(float(int(celloutput[1]) - zeroarray[1]) / tarearray[1], 2))
+                    if(tareflags[2] == 1 and checkarray[2] == 1 and (cuparray[2] > 12*x + y)):
+                        self.write_to_sample(x+6, y, round(float(int(celloutput[2]) - zeroarray[2]) / tarearray[2], 2))
+                    if(tareflags[3] == 1 and checkarray[3] == 1 and (cuparray[3] > 12*x + y)):
+                        self.write_to_sample(x+9, y, round(float(int(celloutput[3]) - zeroarray[3]) / tarearray[3], 2))
+                    if(tareflags[4] == 1 and checkarray[4] == 1 and (cuparray[4] > 12*x + y)):
+                        self.write_to_sample(x+12, y, round(float(int(celloutput[4]) - zeroarray[4]) / tarearray[4], 2))
+                if(s == 'N'):
+                    if(y >= 11): #after making a measurement we go to the next x or y based on what the current robot positon is.
                         x = x+1
-                    if(y >= 12): #if we reach the end of a run we open claws and reset the robot.
+                        y = 0
+                    else:
+                        y = y+1
+                    if(x >= 3): #if we reach the end of a run we open claws and reset the robot.
                         cmd = bytes('hh', 'utf-8')
                         robot.write(cmd)
                         s = robot.read().decode('utf-8')
@@ -654,6 +935,10 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 i = i+1 #after each loop we go to the next state.
                 if(i > 4): #go back to the first state if we reached last state.
                     i = 0
+
+        #This sets up the popup GUI for Calibrating the load cells.
+        def calibrate_cells(self):
+            self.calibrate_popup = Calibrate(self)
 
         #This sets up the popup GUI for setup parameters.
         def setup_param(self):
