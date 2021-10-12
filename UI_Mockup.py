@@ -39,7 +39,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             super().__init__(master)
             self.master = master
             self.wm_title("Setup Parameters")
-            self.geometry("1000x440")
+            self.geometry("1100x480")
             self.buttonfont = "Helvetica 24"
 
             self.loadcellflag = 0 #decides which load cells to read from. 0 reads all 5 load cells.
@@ -120,6 +120,16 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.zeroall["text"] = "Zero All Load Cells"
             self.zeroall["command"] = self.zero_all_cells
             self.zeroall.grid(column=1,row=6)
+
+            self.openclaw = tk.Button(self, font = self.buttonfont)
+            self.openclaw["text"] = "Open Claws"
+            self.openclaw["command"] = self.open_claws
+            self.openclaw.grid(column=2,row=6)
+
+            self.closeclaw = tk.Button(self, font = self.buttonfont)
+            self.closeclaw["text"] = "Close Claws"
+            self.closeclaw["command"] = self.close_claws
+            self.closeclaw.grid(column=3,row=6)
 
             self.tarecell1 = tk.Button(self, font = self.buttonfont)
             self.tarecell1["text"] = "Tare Load Cell 1"
@@ -284,6 +294,22 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             if((threading.active_count() <= 3) and not disconnected[0]):
                 serthread = threading.Thread(target = self.calibrateSer)
                 serthread.start()
+
+        def open_claws(self):
+            if(not disconnected[0]):
+                cmd = bytes('yy', 'utf-8')
+                robot.write(cmd)
+                s = robot.read().decode('utf-8')
+                while(s != 'D'):
+                    s = robot.read().decode('utf-8')
+
+        def close_claws(self):
+            if(not disconnected[0]):
+                cmd = bytes('hh', 'utf-8')
+                robot.write(cmd)
+                s = robot.read().decode('utf-8')
+                while(s != 'D'):
+                    s = robot.read().decode('utf-8')
 
         def validate(self, P): #ensures entered character is an integer
             if str.isdigit(P) or P == "":
@@ -652,6 +678,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.write["command"] = self.write_to_file
             self.write.place(x = 520, y = 800)
 
+            self.grabweight = tk.Button(self, font = self.buttonfont)
+            self.grabweight["text"] = "Grab Weights"
+            self.grabweight["command"] = self.grab_weights
+            self.grabweight.place(x = 730, y = 800)
+
             #These are the arrays that display the color and weight data of each cup onto the GUI.
             #They are 12 by 15, which is 180 cups.
             #We could make an array that stores all the cup weights as floats to print to the text file.
@@ -671,6 +702,31 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             if(self.doneFlag == True):
                 writefile = threading.Thread(target = self.data_output)
                 writefile.start()
+
+        def grab_weights(self):
+            if(not self.disconnected):
+                tmpstr = ""
+                cmd = bytes('zz', 'utf-8') #writes cmdstring to the UART buffer.
+                robot.write(cmd)
+                time.sleep(.5) #Pause between each iteration to prevent robot from moving between states too quickly.
+                s = robot.read().decode('utf-8') #reads ACKS and data from robot.
+                while(s != 'N'):
+                    tmpstr += s
+                    s = robot.read().decode('utf-8')
+                celloutput = tmpstr.split()
+                tmpstr = ""
+                if(tareflags[0] == 1 and checkarray[0] == 1):
+                    self.write_to_sample(0, 0, round(abs(float(int(celloutput[0]) - zeroarray[0]) / tarearray[0]), 2)) #calls write to sample 5 times because there are 5 claws that make measurements.
+                if(tareflags[1] == 1 and checkarray[1] == 1):
+                    self.write_to_sample(3, 0, round(abs(float(int(celloutput[1]) - zeroarray[1]) / tarearray[1]), 2))
+                if(tareflags[2] == 1 and checkarray[2] == 1):
+                    self.write_to_sample(6, 0, round(abs(float(int(celloutput[2]) - zeroarray[2]) / tarearray[2]), 2))
+                if(tareflags[3] == 1 and checkarray[3] == 1):
+                    self.write_to_sample(9, 0, round(abs(float(int(celloutput[3]) - zeroarray[3]) / tarearray[3]), 2))
+                if(tareflags[4] == 1 and checkarray[4] == 1):
+                    self.write_to_sample(12, 0, round(abs(float(int(celloutput[4]) - zeroarray[4]) / tarearray[4]), 2))
+                while(s != 'D'): #waits until robot ACK received before going to the next state. Robot ACKs after completing a command.
+                    s = robot.read().decode('utf-8')
 
         #The termination button sets the GUI into termination state.
         def term_button(self):
@@ -907,15 +963,15 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     celloutput = tmpstr.split()
                     tmpstr = ""
                     if(tareflags[0] == 1 and checkarray[0] == 1 and (cuparray[0] > 12*x + y)):
-                        self.write_to_sample(x, y, round(float(int(celloutput[0]) - zeroarray[0]) / tarearray[0], 2)) #calls write to sample 5 times because there are 5 claws that make measurements.
+                        self.write_to_sample(x, y, round(abs(float(int(celloutput[0]) - zeroarray[0]) / tarearray[0]), 2)) #calls write to sample 5 times because there are 5 claws that make measurements.
                     if(tareflags[1] == 1 and checkarray[1] == 1 and (cuparray[1] > 12*x + y)):
-                        self.write_to_sample(x+3, y, round(float(int(celloutput[1]) - zeroarray[1]) / tarearray[1], 2))
+                        self.write_to_sample(x+3, y, round(abs(float(int(celloutput[1]) - zeroarray[1]) / tarearray[1]), 2))
                     if(tareflags[2] == 1 and checkarray[2] == 1 and (cuparray[2] > 12*x + y)):
-                        self.write_to_sample(x+6, y, round(float(int(celloutput[2]) - zeroarray[2]) / tarearray[2], 2))
+                        self.write_to_sample(x+6, y, round(abs(float(int(celloutput[2]) - zeroarray[2]) / tarearray[2]), 2))
                     if(tareflags[3] == 1 and checkarray[3] == 1 and (cuparray[3] > 12*x + y)):
-                        self.write_to_sample(x+9, y, round(float(int(celloutput[3]) - zeroarray[3]) / tarearray[3], 2))
+                        self.write_to_sample(x+9, y, round(abs(float(int(celloutput[3]) - zeroarray[3]) / tarearray[3]), 2))
                     if(tareflags[4] == 1 and checkarray[4] == 1 and (cuparray[4] > 12*x + y)):
-                        self.write_to_sample(x+12, y, round(float(int(celloutput[4]) - zeroarray[4]) / tarearray[4], 2))
+                        self.write_to_sample(x+12, y, round(abs(float(int(celloutput[4]) - zeroarray[4]) / tarearray[4]), 2))
                 if(s == 'N'):
                     if(y >= 11): #after making a measurement we go to the next x or y based on what the current robot positon is.
                         x = x+1
