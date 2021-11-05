@@ -24,6 +24,9 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     #These arrays are dvided into separate X and Y arrays to take up less space.
     xposarray = [0, 1270, 2600]
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
+    zposarray = [0]
+    wb = [0,0]
+    wbc = ['red','blue','green']
     checkarray = [1,1,1,1,1]
     cuparray = [36,36,36,36,36]
     zeroarray = [0,0,0,0,0]
@@ -443,13 +446,26 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             cuparray[2] = int(self.setentry3.get())
             cuparray[3] = int(self.setentry4.get())
             cuparray[4] = int(self.setentry5.get())
+            self.destroy()
 
     class Maintenance(tk.Toplevel):
         def __init__(self, master):
             super().__init__(master)
             self.master = master
             self.wm_title("Maintenance Parameters")
-            self.geometry("1500x360")
+            self.geometry("1500x500")
+
+            self.optionList = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
+            self.wbc0 = tk.StringVar()
+            self.wbc0.set(wbc[0])
+            self.wbc1 = tk.StringVar()
+            self.wbc1.set(wbc[1])
+            self.wbc2 = tk.StringVar()
+            self.wbc2.set(wbc[2])
+
+            self.wb0 = tk.StringVar()
+            self.wb1 = tk.StringVar()
+
             self.xposi0 = tk.StringVar()
             self.xposi1 = tk.StringVar()
             self.xposi2 = tk.StringVar()
@@ -466,6 +482,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.yposi9 = tk.StringVar()
             self.yposi10 = tk.StringVar()
             self.yposi11 = tk.StringVar()
+
+            self.zposi0 = tk.StringVar()
 
             self.buttonfont = "Helvetica 24"
 
@@ -534,11 +552,47 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.ypos12.insert('0', yposarray[11])
             self.ypos12.grid(column=3, row=4)
 
+            self.zlab0 = tk.Label(self,  text='Z Distance To Cups', font = self.buttonfont)
+            self.zlab0.grid(column=0, row=5)
+            self.zpos0 = tk.Entry(self, font = self.buttonfont, textvariable = self.zposi0, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.zpos0.insert('0', zposarray[0])
+            self.zpos0.grid(column=1, row=5)
+
+            self.cblab0 = tk.Label(self,  text='Weight Too Low Color', font = self.buttonfont)
+            self.cblab0.grid(column=0, row=6)
+            self.cb0 = tk.OptionMenu(self, self.wbc0, *self.optionList)
+            self.cb0.config(font = self.buttonfont)
+            self.cb0.grid(column=1, row=6)
+
+            self.wblab0 = tk.Label(self,  text='Weight Too Low Bound', font = self.buttonfont)
+            self.wblab0.grid(column=2, row=6)
+            self.wbentry0 = tk.Entry(self, font = self.buttonfont, textvariable = self.wb0, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.wbentry0.insert('0', wb[0])
+            self.wbentry0.grid(column=3, row=6)
+
+            self.cblab1 = tk.Label(self,  text='Weight Too High Color', font = self.buttonfont)
+            self.cblab1.grid(column=0, row=7)
+            self.cb1 = tk.OptionMenu(self, self.wbc1, *self.optionList)
+            self.cb1.config(font = self.buttonfont)
+            self.cb1.grid(column=1, row=7)
+
+            self.wblab1 = tk.Label(self,  text='Weight Too High Bound', font = self.buttonfont)
+            self.wblab1.grid(column=2, row=7)
+            self.wbentry1 = tk.Entry(self, font = self.buttonfont, textvariable = self.wb1, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.wbentry1.insert('0', wb[1])
+            self.wbentry1.grid(column=3, row=7)
+
+            self.cblab2 = tk.Label(self,  text='Weight In Bounds Color', font = self.buttonfont)
+            self.cblab2.grid(column=0, row=8)
+            self.cb2 = tk.OptionMenu(self, self.wbc2, *self.optionList)
+            self.cb2.config(font = self.buttonfont)
+            self.cb2.grid(column=1, row=8)
+
             #apply setup parameters.
             self.okay = tk.Button(self, font = self.buttonfont)
             self.okay["text"] = "Apply"
             self.okay["command"] = self.set_maintenance
-            self.okay.grid(column=0,row=5)
+            self.okay.grid(column=0,row=9)
 
         def validate(self, P): #ensures entered character is an integer
             if str.isdigit(P) or P == "":
@@ -562,6 +616,13 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             yposarray[9] = int(self.yposi9.get())
             yposarray[10] = int(self.yposi10.get())
             yposarray[11] = int(self.yposi11.get())
+            zposarray[0] = int(self.zposi0.get())
+            wbc[0] = self.wbc0.get()
+            wb[0] = int(self.wb0.get())
+            wbc[1] = self.wbc1.get()
+            wb[1] = int(self.wb1.get())
+            wbc[2] = self.wbc2.get()
+            self.destroy()
 
 
     class App(tk.Tk):
@@ -623,7 +684,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
         def create_widgets(self): #Creates all the buttons and Visual stuff.
 
             #GUI size and fonts
-            self.tray = tk.Canvas(self, width = "1000", height = "900")
+            self.tray = tk.Canvas(self, width = "1900", height = "1000")
             self.tray.pack()
 
             alert = threading.Thread(target = self.alert_loop)
@@ -636,52 +697,47 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.run = tk.Button(self, font = self.buttonfont)
             self.run["text"] = "Run"
             self.run["command"] = self.run_button
-            self.run.place(x = 5, y = 700)
+            self.run.place(x = 1450, y = 25)
 
             self.pause = tk.Button(self, font = self.buttonfont)
             self.pause["text"] = "Pause"
             self.pause["command"] = self.pause_button
-            self.pause.place(x = 105, y = 700)
+            self.pause.place(x = 1540, y = 25)
 
             self.terminate = tk.Button(self, font = self.buttonfont)
             self.terminate["text"] = "Terminate"
             self.terminate["command"] = self.term_button
-            self.terminate.place(x = 235, y = 700)
+            self.terminate.place(x = 1660, y = 25)
 
             self.calibrate = tk.Button(self, font = self.buttonfont)
             self.calibrate["text"] = "Calibrate"
             self.calibrate["command"] = self.calibrate_cells
-            self.calibrate.place(x = 415, y = 700)
+            self.calibrate.place(x = 1450, y = 125)
 
             self.testrun = tk.Button(self, font = self.buttonfont)
             self.testrun["text"] = "Test Run"
             self.testrun["command"] = self.test_button
-            self.testrun.place(x = 580, y = 700)
+            self.testrun.place(x = 1450, y = 425)
 
             self.connect = tk.Button(self, font = self.buttonfont)
             self.connect["text"] = "Disconnected"
             self.connect["bg"] = "red"
-            self.connect.place(x = 750, y = 700)
+            self.connect.place(x = 1655, y = 325)
 
             self.maintenance = tk.Button(self, font = self.buttonfont)
             self.maintenance["text"] = "Maintenance"
             self.maintenance["command"] = self.maintenance_param
-            self.maintenance.place(x = 5, y = 800)
+            self.maintenance.place(x = 1605, y = 125)
 
             self.setup = tk.Button(self, font = self.buttonfont)
             self.setup["text"] = "Setup Parameters"
             self.setup["command"] = self.setup_param
-            self.setup.place(x = 230, y = 800)
+            self.setup.place(x = 1450, y = 225)
 
             self.write = tk.Button(self, font = self.buttonfont)
             self.write["text"] = "Write to File"
             self.write["command"] = self.write_to_file
-            self.write.place(x = 520, y = 800)
-
-            self.grabweight = tk.Button(self, font = self.buttonfont)
-            self.grabweight["text"] = "Grab Weights"
-            self.grabweight["command"] = self.grab_weights
-            self.grabweight.place(x = 730, y = 800)
+            self.write.place(x = 1450, y = 325)
 
             #These are the arrays that display the color and weight data of each cup onto the GUI.
             #They are 12 by 15, which is 180 cups.
@@ -694,8 +750,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             #This generates all the positions for the cup visualization in the GUI.
             for x in range(15):
                 for y in range(12):
-                    self.samples[x][y] = self.tray.create_oval((200 * math.floor(x/3)) + (55 * (x % 3)) + 5, 55 * y + 5, (200 * math.floor(x/3)) + (55 * (x % 3)) + 55, 55 * y + 55, fill = "gray")
-                    self.sampletext[x][y] = self.tray.create_text((200 * math.floor(x/3)) + (55 * (x % 3)) + 30, 55 * y + 30, text = "0", justify = tk.CENTER, font = "Helvetica 16")
+                    self.samples[x][y] = self.tray.create_oval((300 * math.floor(x/3)) + (80 * (x % 3)) + 5, 80 * y + 5, (300 * math.floor(x/3)) + (80 * (x % 3)) + 80, 80 * y + 80, fill = "gray")
+                    self.sampletext[x][y] = self.tray.create_text((300 * math.floor(x/3)) + (80 * (x % 3)) + 30, 80 * y + 30, text = "0", justify = tk.CENTER, font = "Helvetica 16")
                     self.sampleweight[x][y] = 0
 
         def write_to_file(self):
@@ -743,11 +799,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
         #It also handles the cup colors, so when we implement customs cup colors we need to make sure
         #The cup colors are not constants like they are right now.
         def write_to_sample(self, x, y, weight): #takes x and y position in array as parameters.
-            color = "green"
-            if weight < 45: #oh yeah these weight comparison values also should not be constants.
-                color = "red"
-            elif weight > 55:
-                color = "blue"
+            color = wbc[2]
+            if weight < wb[0]: #oh yeah these weight comparison values also should not be constants.
+                color = wbc[0]
+            elif weight > wb[1]:
+                color = wbc[1]
             self.tray.itemconfig(self.samples[x][y], fill = color) #Write color to array.
             self.tray.itemconfig(self.sampletext[x][y], text = str(weight)) #Write weight to array.
             self.sampleweight[x][y] = weight
