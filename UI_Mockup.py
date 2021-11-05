@@ -25,7 +25,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     xposarray = [0, 1270, 2600]
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
     zposarray = [0]
-    wb = [0,0]
+    wb = [45,55]
     wbc = ['red','blue','green']
     checkarray = [1,1,1,1,1]
     cuparray = [36,36,36,36,36]
@@ -453,7 +453,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             super().__init__(master)
             self.master = master
             self.wm_title("Maintenance Parameters")
-            self.geometry("1500x500")
+            self.geometry("1500x550")
 
             self.optionList = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
             self.wbc0 = tk.StringVar()
@@ -484,6 +484,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.yposi11 = tk.StringVar()
 
             self.zposi0 = tk.StringVar()
+
+            self.zsteps = tk.StringVar()
 
             self.buttonfont = "Helvetica 24"
 
@@ -588,11 +590,27 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.cb2.config(font = self.buttonfont)
             self.cb2.grid(column=1, row=8)
 
+            self.wblab1 = tk.Label(self,  text='Number of Steps', font = self.buttonfont)
+            self.wblab1.grid(column=0, row=9)
+            self.wbentry1 = tk.Entry(self, font = self.buttonfont, textvariable = self.zsteps, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.wbentry1.insert('0', 100)
+            self.wbentry1.grid(column=1, row=9)
+
+            self.okay = tk.Button(self, font = self.buttonfont)
+            self.okay["text"] = "Move Tray Up N Steps"
+            self.okay["command"] = self.move_up
+            self.okay.grid(column=2,row=9)
+
+            self.okay = tk.Button(self, font = self.buttonfont)
+            self.okay["text"] = "Move Tray Down N Steps"
+            self.okay["command"] = self.move_up
+            self.okay.grid(column=3,row=9)
+
             #apply setup parameters.
             self.okay = tk.Button(self, font = self.buttonfont)
             self.okay["text"] = "Apply"
             self.okay["command"] = self.set_maintenance
-            self.okay.grid(column=0,row=9)
+            self.okay.grid(column=0,row=10)
 
         def validate(self, P): #ensures entered character is an integer
             if str.isdigit(P) or P == "":
@@ -600,6 +618,24 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             else:
                 return False
 
+        def move_up(self):
+            if(not disconnected[0] and int(self.zsteps.get()) > 0):
+                robot.reset_input_buffer() #This flushes the serial buffer.
+                cmdstring = 'u' + '{0:05d}'.format(int(self.zsteps.get()))
+                cmd = bytes(cmdstring, 'utf-8')
+                robot.write(cmd)
+                s = ''
+                while(s != 'D'): #clearing buffer before issuing commands
+                    s = robot.read().decode('utf-8')
+        def move_down(self):
+            if(not disconnected[0] and int(self.zsteps.get()) > 0):
+                robot.reset_input_buffer() #This flushes the serial buffer.
+                cmdstring = 'o' + '{0:05d}'.format(int(self.zsteps.get()))
+                cmd = bytes(cmdstring, 'utf-8')
+                robot.write(cmd)
+                s = ''
+                while(s != 'D'): #clearing buffer before issuing commands
+                    s = robot.read().decode('utf-8')
         def set_maintenance(self):
             xposarray[0] = int(self.xposi0.get())
             xposarray[1] = int(self.xposi1.get())
@@ -622,6 +658,14 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             wbc[1] = self.wbc1.get()
             wb[1] = int(self.wb1.get())
             wbc[2] = self.wbc2.get()
+            if(not disconnected[0] and int(self.zposi0.get()) > 0):
+                robot.reset_input_buffer() #This flushes the serial buffer.
+                cmdstring = 'o' + '{0:05d}'.format(int(self.zposi0.get()))
+                cmd = bytes(cmdstring, 'utf-8')
+                robot.write(cmd)
+                s = ''
+                while(s != 'D'): #clearing buffer before issuing commands
+                    s = robot.read().decode('utf-8')
             self.destroy()
 
 
