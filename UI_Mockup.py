@@ -24,7 +24,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     #These arrays are dvided into separate X and Y arrays to take up less space.
     xposarray = [0, 1270, 2600]
     yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
-    zposarray = [0]
+    zposarray = [0, 0]
     wb = [45,55]
     wbc = ['red','blue','green']
     checkarray = [1,1,1,1,1]
@@ -36,6 +36,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     tareflags = [0,0,0,0,0]
     weightfloat = [50]
     disconnected = [True]
+    commError = [False]
 
     class Calibrate(tk.Toplevel):
         def __init__(self, master):
@@ -162,21 +163,37 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
         def calibrateSer(self):
             robot.reset_input_buffer() #This flushes the serial buffer.
             cmd = bytes('nn', 'utf-8')
-            robot.write(cmd)
+            try:
+                robot.write(cmd)
+            except serial.SerialException:
+                commError[0] = True
+                return
             s = ''
             tempstr = ""
             while(s != 'D'): #clearing buffer before issuing commands
-                s = robot.read().decode('utf-8')
+                try:
+                    s = robot.read(1).decode('utf-8')
+                except serial.SerialException:
+                    commError[0] = True
+                    return
 
             if(self.loadcellflag == 0 or self.loadcellflag == 1):
                 cmd = bytes('t1t', 'utf-8') #all UART communications must be made as UTF-8 encoded byte strings. This command resets the robot.
                 robot.write(cmd) #Write to serial buffer.
                 while(s != 'N'):
-                    s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
+                    try:
+                        s = robot.read(1).decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                     if(s != 'N'):
                         tempstr += s
-                while(s != 'D'): #waits until robot ACK received before going to the next state. Robot ACKs after completing a command.
-                    s = robot.read().decode('utf-8')
+                while(s != 'D'):
+                    try:
+                        s = robot.read().decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                 if(self.loadcellflag == 0):
                     zeroarray[0] = int(tempstr)
                     self.zeroloadcell1.set(int(tempstr))
@@ -189,13 +206,25 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             if(self.loadcellflag == 0 or self.loadcellflag == 2):
                 tempstr = ""
                 cmd = bytes('t2t', 'utf-8')
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
+                    return
                 while(s != 'N'):
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read(1).decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                     if(s != 'N'):
                         tempstr += s
                 while(s != 'D'):
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read().decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                 if(self.loadcellflag == 0):
                     zeroarray[1] = int(tempstr)
                     self.zeroloadcell2.set(int(tempstr))
@@ -208,13 +237,25 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             if(self.loadcellflag == 0 or self.loadcellflag == 3):
                 tempstr = ""
                 cmd = bytes('t3t', 'utf-8')
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
+                    return
                 while(s != 'N'):
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read(1).decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                     if(s != 'N'):
                         tempstr += s
                 while(s != 'D'):
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read().decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                 if(self.loadcellflag == 0):
                     zeroarray[2] = int(tempstr)
                     self.zeroloadcell3.set(int(tempstr))
@@ -227,13 +268,25 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             if(self.loadcellflag == 0 or self.loadcellflag == 4):
                 tempstr = ""
                 cmd = bytes('t4t', 'utf-8') #she's just like me!
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
+                    return
                 while(s != 'N'):
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read(1).decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                     if(s != 'N'):
                         tempstr += s
                 while(s != 'D'):
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read().decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                 if(self.loadcellflag == 0):
                     zeroarray[3] = int(tempstr)
                     self.zeroloadcell4.set(int(tempstr))
@@ -246,13 +299,25 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             if(self.loadcellflag == 0 or self.loadcellflag == 5):
                 tempstr = ""
                 cmd = bytes('t5t', 'utf-8')
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
+                    return
                 while(s != 'N'):
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read(1).decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                     if(s != 'N'):
                         tempstr += s
                 while(s != 'D'):
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read().decode('utf-8')
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
                 if(self.loadcellflag == 0):
                     zeroarray[4] = int(tempstr)
                     self.zeroloadcell5.set(int(tempstr))
@@ -301,7 +366,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
         def open_claws(self):
             if(not disconnected[0]):
                 cmd = bytes('yy', 'utf-8')
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
+                    return
                 s = robot.read().decode('utf-8')
                 while(s != 'D'):
                     s = robot.read().decode('utf-8')
@@ -309,7 +378,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
         def close_claws(self):
             if(not disconnected[0]):
                 cmd = bytes('hh', 'utf-8')
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
+                    return
                 s = robot.read().decode('utf-8')
                 while(s != 'D'):
                     s = robot.read().decode('utf-8')
@@ -484,7 +557,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.yposi11 = tk.StringVar()
 
             self.zposi0 = tk.StringVar()
-
+            self.zposi1 = tk.StringVar()
             self.zsteps = tk.StringVar()
 
             self.buttonfont = "Helvetica 24"
@@ -560,6 +633,12 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.zpos0.insert('0', zposarray[0])
             self.zpos0.grid(column=1, row=5)
 
+            self.zlab1 = tk.Label(self,  text='Z Weight Meas Dist', font = self.buttonfont)
+            self.zlab1.grid(column=2, row=5)
+            self.zpos1 = tk.Entry(self, font = self.buttonfont, textvariable = self.zposi1, validate = 'key', validatecommand = (vcmd, '%P'))
+            self.zpos1.insert('0', zposarray[1])
+            self.zpos1.grid(column=3, row=5)
+
             self.cblab0 = tk.Label(self,  text='Weight Too Low Color', font = self.buttonfont)
             self.cblab0.grid(column=0, row=6)
             self.cb0 = tk.OptionMenu(self, self.wbc0, *self.optionList)
@@ -596,15 +675,15 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             self.wbentry1.insert('0', 100)
             self.wbentry1.grid(column=1, row=9)
 
-            self.okay = tk.Button(self, font = self.buttonfont)
-            self.okay["text"] = "Move Tray Up N Steps"
-            self.okay["command"] = self.move_up
-            self.okay.grid(column=2,row=9)
+            self.mvtrup = tk.Button(self, font = self.buttonfont)
+            self.mvtrup["text"] = "Move Tray Up N Steps"
+            self.mvtrup["command"] = self.move_up
+            self.mvtrup.grid(column=2,row=9)
 
-            self.okay = tk.Button(self, font = self.buttonfont)
-            self.okay["text"] = "Move Tray Down N Steps"
-            self.okay["command"] = self.move_up
-            self.okay.grid(column=3,row=9)
+            self.mvtrdn = tk.Button(self, font = self.buttonfont)
+            self.mvtrdn["text"] = "Move Tray Down N Steps"
+            self.mvtrdn["command"] = self.move_up
+            self.mvtrdn.grid(column=3,row=9)
 
             #apply setup parameters.
             self.okay = tk.Button(self, font = self.buttonfont)
@@ -623,19 +702,36 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 robot.reset_input_buffer() #This flushes the serial buffer.
                 cmdstring = 'u' + '{0:05d}'.format(int(self.zsteps.get()))
                 cmd = bytes(cmdstring, 'utf-8')
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
+                    return
                 s = ''
                 while(s != 'D'): #clearing buffer before issuing commands
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
         def move_down(self):
             if(not disconnected[0] and int(self.zsteps.get()) > 0):
                 robot.reset_input_buffer() #This flushes the serial buffer.
                 cmdstring = 'o' + '{0:05d}'.format(int(self.zsteps.get()))
                 cmd = bytes(cmdstring, 'utf-8')
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
+                    return
+
                 s = ''
                 while(s != 'D'): #clearing buffer before issuing commands
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
+                    except serial.SerialException:
+                        commError[0] = True
+                        return
         def set_maintenance(self):
             xposarray[0] = int(self.xposi0.get())
             xposarray[1] = int(self.xposi1.get())
@@ -653,6 +749,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             yposarray[10] = int(self.yposi10.get())
             yposarray[11] = int(self.yposi11.get())
             zposarray[0] = int(self.zposi0.get())
+            zposarray[1] = int(self.zposi1.get())
             wbc[0] = self.wbc0.get()
             wb[0] = int(self.wb0.get())
             wbc[1] = self.wbc1.get()
@@ -662,10 +759,17 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 robot.reset_input_buffer() #This flushes the serial buffer.
                 cmdstring = 'o' + '{0:05d}'.format(int(self.zposi0.get()))
                 cmd = bytes(cmdstring, 'utf-8')
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    commError[0] = True
                 s = ''
                 while(s != 'D'): #clearing buffer before issuing commands
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
+                    except serial.SerialException:
+                        commError[0] = True
+                        break
             self.destroy()
 
 
@@ -682,6 +786,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     descstring = str(it.description) #convert to a string
                     if("Arduino" in descstring): #looks for Arduino to connect to.
                         self.arduinoflag = True
+                        commError[0] = False
+                        self.CommErrorFlag = False
                         if(not robot.is_open and self.disconnected): #attempt to connect or reconnect
                             robot.port = it.device #sets port number to Arduino's port.
                             robot.baudrate = 9600 #sets baud rate. This can be a constant.
@@ -699,6 +805,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
         def alert_loop(self):
             while(not self.killThreads):
+                if(commError[0]):
+                    self.CommErrorFlag = True
                 if(self.CommErrorFlag):
                     self.tray.configure(bg='red')
                     time.sleep(1)
@@ -802,31 +910,6 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             if(self.doneFlag == True):
                 writefile = threading.Thread(target = self.data_output)
                 writefile.start()
-
-        def grab_weights(self):
-            if(not self.disconnected):
-                tmpstr = ""
-                cmd = bytes('zz', 'utf-8') #writes cmdstring to the UART buffer.
-                robot.write(cmd)
-                time.sleep(.5) #Pause between each iteration to prevent robot from moving between states too quickly.
-                s = robot.read().decode('utf-8') #reads ACKS and data from robot.
-                while(s != 'N'):
-                    tmpstr += s
-                    s = robot.read().decode('utf-8')
-                celloutput = tmpstr.split()
-                tmpstr = ""
-                if(tareflags[0] == 1 and checkarray[0] == 1):
-                    self.write_to_sample(0, 0, round(abs(float(int(celloutput[0]) - zeroarray[0]) / tarearray[0]), 2)) #calls write to sample 5 times because there are 5 claws that make measurements.
-                if(tareflags[1] == 1 and checkarray[1] == 1):
-                    self.write_to_sample(3, 0, round(abs(float(int(celloutput[1]) - zeroarray[1]) / tarearray[1]), 2))
-                if(tareflags[2] == 1 and checkarray[2] == 1):
-                    self.write_to_sample(6, 0, round(abs(float(int(celloutput[2]) - zeroarray[2]) / tarearray[2]), 2))
-                if(tareflags[3] == 1 and checkarray[3] == 1):
-                    self.write_to_sample(9, 0, round(abs(float(int(celloutput[3]) - zeroarray[3]) / tarearray[3]), 2))
-                if(tareflags[4] == 1 and checkarray[4] == 1):
-                    self.write_to_sample(12, 0, round(abs(float(int(celloutput[4]) - zeroarray[4]) / tarearray[4]), 2))
-                while(s != 'D'): #waits until robot ACK received before going to the next state. Robot ACKs after completing a command.
-                    s = robot.read().decode('utf-8')
 
         #The termination button sets the GUI into termination state.
         def term_button(self):
@@ -984,9 +1067,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             robot.reset_input_buffer() #This flushes the serial buffer.
             cmd = bytes('rr', 'utf-8') #all UART communications must be made as UTF-8 encoded byte strings. This command resets the robot.
             robot.write(cmd) #Write to serial buffer.
-
-            s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
-
+            try:
+                s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
+            except serial.SerialException:
+                self.CommErrorFlag = True
+                return
             for j in range(15): #resets all the cup colors and weights.
                 for k in range(12):
                     self.tray.itemconfig(self.samples[j][k], fill = "gray")
@@ -998,7 +1083,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     if(self.termflag): #I still want to be able to terminate while paused so i copied the code.
                         if(i > 2):
                             cmd = bytes('hh', 'utf-8') #This ensures the claws are in the idle position so they dont consume power.
-                            robot.write(cmd)
+                            try:
+                                robot.write(cmd)
+                            except serial.SerialException:
+                                self.CommErrorFlag = True
+                                return
                         for j in range(15): #resets all the cup colors and weights.
                             for k in range(12):
                                 self.tray.itemconfig(self.samples[j][k], fill = "gray")
@@ -1009,7 +1098,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 if(self.termflag): #same as above, just for when the run is unpaused.
                     if(i > 2):
                         cmd = bytes('hh', 'utf-8')
-                        robot.write(cmd)
+                        try:
+                            robot.write(cmd)
+                        except serial.SerialException:
+                            self.CommErrorFlag = True
+                            return
                     for j in range(15): #resets all the cup colors and weights.
                         for k in range(12):
                             self.tray.itemconfig(self.samples[j][k], fill = "gray")
@@ -1050,16 +1143,40 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     ypos = yposarray[y]
                 elif(i == 2): #this turns on the claw solenoids.
                     cmdstring = 'yy'
-                elif(i == 3): #this tells the robot to make a weight measurement.
+                elif(i == 3):
+                    cmdstring = 'u' + '{0:05f}'.format(zposarray[0])
+                elif(i == 4):
+                    cmdstring = 'hh'
+                elif(i == 5):
+                    cmdstring = 'o' + '{0:05f}'.format(zposarray[1])
+                elif(i == 6): #this tells the robot to make a weight measurement.
                     cmdstring = 'zz'
+                elif(i == 7):
+                    cmdstring = 'u' + '{0:05f}'.format(zposarray[1])
+                elif(i == 8):
+                    cmdstring = 'yy'
+                elif(i == 9):
+                    cmdstring = 'o' + '{0:05f}'.format(zposarray[0])
                 cmd = bytes(cmdstring, 'utf-8') #writes cmdstring to the UART buffer.
-                robot.write(cmd)
+                try:
+                    robot.write(cmd)
+                except serial.SerialException:
+                    self.CommErrorFlag = True
+                    return
                 time.sleep(.5) #Pause between each iteration to prevent robot from moving between states too quickly.
-                s = robot.read().decode('utf-8') #reads ACKS and data from robot.
+                try:
+                    s = robot.read(1).decode('utf-8') #reads ACKS and data from robot.
+                except serial.SerialException:
+                    self.CommErrorFlag = True
+                    return
                 if(s != 'D'):
                     while(s != 'N'):
                         tmpstr += s
-                        s = robot.read().decode('utf-8')
+                        try:
+                            s = robot.read(1).decode('utf-8') #reads ACKS and data from robot.
+                        except serial.SerialException:
+                            self.CommErrorFlag = True
+                            return
                     celloutput = tmpstr.split()
                     tmpstr = ""
                     if(tareflags[0] == 1 and checkarray[0] == 1 and (cuparray[0] > 12*x + y)):
@@ -1087,9 +1204,13 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                         self.doneFlag = True
                         return
                 while(s != 'D'): #waits until robot ACK received before going to the next state. Robot ACKs after completing a command.
-                    s = robot.read().decode('utf-8')
+                    try:
+                        s = robot.read(1).decode('utf-8')
+                    except serial.SerialException:
+                        self.CommErrorFlag = True
+                        return
                 i = i+1 #after each loop we go to the next state.
-                if(i > 4): #go back to the first state if we reached last state.
+                if(i > 10): #go back to the first state if we reached last state.
                     i = 0
 
         #This sets up the popup GUI for Calibrating the load cells.
