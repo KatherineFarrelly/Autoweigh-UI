@@ -7,6 +7,7 @@
 #importing all the libraries. Of note are serial and tkinter.
 import sys
 import tkinter as tk
+from tkinter import ttk
 import serial
 import math
 import random
@@ -420,12 +421,38 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             vcmd = (self.register(self.validate)) #command that gets issued when a command box is edited to make sure only integers get written
             vcmda = (self.register(self.validatealpha)) #same as above for only letters
 
+            alphaOptions = []
+            tmpstr = 'A'
+            ENC_TYPE = 'ascii'
+            while(tmpstr != 'ZZ'):
+                alphaOptions.append(tmpstr)
+                s = bytearray(tmpstr, ENC_TYPE)
+                if(len(s) == 2):
+                    if(s[1] == ord('Z')):
+                        s[1] = ord('A')
+                        if(s[0] == ord('Z')):
+                            tmpstr = 'A'
+                        else:
+                            s[0] = s[0] + 1
+                            tmpstr = s.decode(ENC_TYPE)
+                    else:
+                        s[1] = s[1] + 1
+                        tmpstr = s.decode(ENC_TYPE)
+                else:
+                    if(s[0] == ord('Z')):
+                        tmpstr = 'AA'
+                    else:
+                        s[0] = s[0] + 1
+                        tmpstr = s.decode(ENC_TYPE)
+            alphaOptions.append(tmpstr)
+
             #setup GUI section for the alphanumeric code entering.
             self.label = tk.Label(self,  text='Select Tray Labelling:', font = self.buttonfont)
             self.label.grid(column=0, row=0) #All of this GUI is setup as a grid.
 
-            self.alphabetical = tk.Entry(self, font = self.buttonfont, textvariable = self.optionvar, validate = 'key', validatecommand = (vcmda, '%P'))
-            self.alphabetical.insert('0', alphavar[0])
+            self.alphabetical = ttk.Combobox(self, font = self.buttonfont, textvariable = self.optionvar)
+            self.alphabetical.set(alphavar[0])
+            self.alphabetical['values'] = alphaOptions
             self.alphabetical.grid(column=1, row=0)
 
             #setup all the entry forms and radio buttons for the number of trays and number of cups per tray.
@@ -903,7 +930,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             for x in range(15):
                 for y in range(12):
                     self.samples[x][y] = self.tray.create_oval((300 * math.floor(x/3)) + (80 * (x % 3)) + 5, 80 * y + 5, (300 * math.floor(x/3)) + (80 * (x % 3)) + 80, 80 * y + 80, fill = "gray")
-                    self.sampletext[x][y] = self.tray.create_text((300 * math.floor(x/3)) + (80 * (x % 3)) + 30, 80 * y + 30, text = "0", justify = tk.CENTER, font = "Helvetica 16")
+                    self.sampletext[x][y] = self.tray.create_text((300 * math.floor(x/3)) + (80 * (x % 3)) + 40, 80 * y + 40, text = "0", justify = tk.CENTER, font = "Helvetica 20")
                     self.sampleweight[x][y] = 0
 
         def write_to_file(self):
@@ -990,17 +1017,23 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
             ENC_TYPE = 'ascii'
             s = bytearray(tray1, ENC_TYPE)
-            if(s[1] == ord('Z')):
-                s[1] = ord('A')
+            if(len(s) == 2):
+                if(s[1] == ord('Z')):
+                    s[1] = ord('A')
+                    if(s[0] == ord('Z')):
+                        alphavar[0] = 'A'
+                    else:
+                        s[0] = s[0] + 1
+                        alphavar[0] = s.decode(ENC_TYPE)
+                else:
+                    s[1] = s[1] + 1
+                    alphavar[0] = s.decode(ENC_TYPE)
+            else:
                 if(s[0] == ord('Z')):
                     alphavar[0] = 'AA'
                 else:
                     s[0] = s[0] + 1
                     alphavar[0] = s.decode(ENC_TYPE)
-            else:
-                s[1] = s[1] + 1
-                alphavar[0] = s.decode(ENC_TYPE)
-
             file.close()
 
 
