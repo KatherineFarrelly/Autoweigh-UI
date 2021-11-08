@@ -23,8 +23,8 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
     #These are the X and Y positions for all 36 cups in the robot.
     #These arrays are dvided into separate X and Y arrays to take up less space.
-    xposarray = [0, 1270, 2600]
-    yposarray = [0, 1440, 2880, 4390, 5900, 7410, 8920, 10430, 11920, 13470, 14980, 16590]
+    xposarray = [0, 1400, 2900]
+    yposarray = [0, 1440, 2880, 4390, 5900, 7600, 8800, 10400, 12100, 13600, 15000, 16600]
     zposarray = [0, 0]
     wb = [45,55]
     wbc = ['red','blue','green']
@@ -180,7 +180,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
             if(self.loadcellflag == 0 or self.loadcellflag == 1):
                 cmd = bytes('t1t', 'utf-8') #all UART communications must be made as UTF-8 encoded byte strings. This command resets the robot.
-                robot.write(cmd) #Write to serial buffer.
+                try:
+                    robot.write(cmd) #write to serial buffer.
+                except serial.SerialException:
+                    commError[0] = True
+                    return
                 while(s != 'N'):
                     try:
                         s = robot.read(1).decode('utf-8')
@@ -709,7 +713,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
 
             self.mvtrdn = tk.Button(self, font = self.buttonfont)
             self.mvtrdn["text"] = "Move Tray Down N Steps"
-            self.mvtrdn["command"] = self.move_up
+            self.mvtrdn["command"] = self.move_down
             self.mvtrdn.grid(column=3,row=9)
 
             #apply setup parameters.
@@ -1098,13 +1102,19 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             i = 0
             tmpstr = ""
             robot.reset_input_buffer() #This flushes the serial buffer.
-            cmd = bytes('rr', 'utf-8') #all UART communications must be made as UTF-8 encoded byte strings. This command resets the robot.
-            robot.write(cmd) #Write to serial buffer.
+            cmd = bytes('rr', 'utf-8')
             try:
-                s = robot.read().decode('utf-8') #wait until robot makes a reply, basically. 'D' is our ACK character.
+                robot.write(cmd)
             except serial.SerialException:
                 self.CommErrorFlag = True
                 return
+            s = ''
+            while(s != 'D'): #clearing buffer before issuing commands
+                try:
+                    s = robot.read(1).decode('utf-8')
+                except serial.SerialException:
+                    self.CommErrorFlag = True
+                    return
             for j in range(15): #resets all the cup colors and weights.
                 for k in range(12):
                     self.tray.itemconfig(self.samples[j][k], fill = "gray")
@@ -1177,19 +1187,23 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 elif(i == 2): #this turns on the claw solenoids.
                     cmdstring = 'yy'
                 elif(i == 3):
-                    cmdstring = 'u' + '{0:05f}'.format(zposarray[0])
+                    if(zposarray[0] > 0):
+                        cmdstring = 'u' + '{0:05f}'.format(zposarray[0])
                 elif(i == 4):
                     cmdstring = 'hh'
                 elif(i == 5):
-                    cmdstring = 'o' + '{0:05f}'.format(zposarray[1])
+                    if(zposarray[1] > 0):
+                        cmdstring = 'o' + '{0:05f}'.format(zposarray[1])
                 elif(i == 6): #this tells the robot to make a weight measurement.
                     cmdstring = 'zz'
                 elif(i == 7):
-                    cmdstring = 'u' + '{0:05f}'.format(zposarray[1])
+                    if(zposarray[1] > 0):
+                        cmdstring = 'u' + '{0:05f}'.format(zposarray[1])
                 elif(i == 8):
                     cmdstring = 'yy'
                 elif(i == 9):
-                    cmdstring = 'o' + '{0:05f}'.format(zposarray[0])
+                    if(zposarray[0] > 0):
+                        cmdstring = 'o' + '{0:05f}'.format(zposarray[0])
                 cmd = bytes(cmdstring, 'utf-8') #writes cmdstring to the UART buffer.
                 try:
                     robot.write(cmd)
