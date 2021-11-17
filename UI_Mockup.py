@@ -5,6 +5,7 @@
 #It also handles file output of the robot data.
 
 #importing all the libraries. Of note are serial and tkinter.
+import os
 import sys
 import tkinter as tk
 from tkinter import ttk
@@ -24,7 +25,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     #These are the X and Y positions for all 36 cups in the robot.
     #These arrays are dvided into separate X and Y arrays to take up less space.
     xposarray = [0, 1400, 2900]
-    yposarray = [0, 1440, 2880, 4390, 5900, 7600, 8800, 10400, 12100, 13600, 15000, 16600]
+    yposarray = [0, 1440, 2880, 4390, 5900, 7600, 8800, 10400, 12100, 13600, 15000, 16700]
     zposarray = [0, 0]
     wb = [45,55]
     wbc = ['red','blue','green']
@@ -39,6 +40,50 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
     disconnected = [True]
     commError = [False]
 
+    try: #massive try block lets go
+        configFile = open(r"./config.cfg", "r")
+        tmps = 'x'
+        while(tmps != ''):
+            tmps = configFile.readline()
+            iter = 0
+            if('xposarray' in tmps):
+                for z in tmps.split():
+                    if z.isdigit():
+                        xposarray[iter] = int(z)
+                        iter += 1
+                        if(iter >= len(xposarray)):
+                            break
+            if('yposarray' in tmps):
+                for z in tmps.split():
+                    if z.isdigit():
+                        yposarray[iter] = int(z)
+                        iter += 1
+                        if(iter >= len(yposarray)):
+                            break
+            if('zposarray' in tmps):
+                for z in tmps.split():
+                    if z.isdigit():
+                        zposarray[iter] = int(z)
+                        iter += 1
+                        if(iter >= len(zposarray)):
+                            break
+            if('weight bounds' in tmps):
+                for z in tmps.split():
+                    if z.isdigit():
+                        wb[iter] = int(z)
+                        iter += 1
+                        if(iter >= len(wb)):
+                            break
+            if('weight bound colors' in tmps):
+                for z in tmps.split():
+                    if iter > 2:
+                        wbc[iter] = int(z)
+                        iter += 1
+                        if(iter + 3 >= len(wbc)):
+                            break
+        configFile.close()
+    except OSError:
+        pass
     class Calibrate(tk.Toplevel):
         def __init__(self, master):
             super().__init__(master)
@@ -763,6 +808,7 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     except serial.SerialException:
                         commError[0] = True
                         return
+
         def set_maintenance(self):
             xposarray[0] = int(self.xposi0.get())
             xposarray[1] = int(self.xposi1.get())
@@ -801,6 +847,21 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                     except serial.SerialException:
                         commError[0] = True
                         break
+            try:
+                if os.path.exists("config.cfg"):
+                    os.remove("config.cfg")
+                newConfig = open('config.cfg', 'w')
+                newConfig.write('xposarray' + ' ' + self.xposi0.get() + ' ' + self.xposi1.get() + ' ' + self.xposi2.get() + '\n')
+                newConfig.write('yposarray' + ' ' + self.yposi0.get() + ' ' + self.yposi1.get() + ' ' + self.yposi2.get())
+                newConfig.write(' ' + self.yposi3.get() + ' ' + self.yposi4.get() + ' ' + self.yposi5.get())
+                newConfig.write(' ' + self.yposi6.get() + ' ' + self.yposi7.get() + ' ' + self.yposi8.get())
+                newConfig.write(' ' + self.yposi9.get() + ' ' + self.yposi10.get() + ' ' + self.yposi11.get() + '\n')
+                newConfig.write('zposarray' + ' ' + self.zposi0.get() + ' ' + self.zposi1.get() + '\n')
+                newConfig.write('weight bounds' + ' ' + self.wb0.get() + ' ' + self.wb1.get() + '\n')
+                newConfig.write('weight bound colors' + ' ' + self.wbc0.get() + ' ' + self.wbc1.get() + ' ' + self.wbc2.get() + '\n')
+                newConfig.close()
+            except OSError:
+                pass
             self.destroy()
 
 
@@ -976,7 +1037,11 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
             cupnumber = 1 #Initial cup of the run. Temporary variable: Should be replaced with cupnumber from setup parameters
             cup = '{0:05d}'.format(cupnumber) #Formats cup number properly
             filename = tray1 + cup + "_" + dt + ".txt" #collates the information into the proper file name
-            file = open(r"./Output_Data/"+filename, "w") #Creates a file with the correct name
+            try:
+                file = open(r"./Output_Data/"+filename, "w") #Creates a file with the correct name
+            except OSError:
+                os.makedirs('Output_Data')
+                file = open(r"./Output_Data/"+filename, "w") #Creates a file with the correct name
             file.write("***********************************\n") #This and the next few lines create the header for the text file
             file.write("        Weight Data File\n")
             file.write("***********************************\n")
@@ -1066,15 +1131,15 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                             self.tray.itemconfig(self.sampletext[j][k], text = "0")
                     self.termflag = False
                     return
-                if(checkarray[0] == 1 and (cuparray[0] > 12*x + y)):
+                if(tareflags[0] == 1 and checkarray[0] == 1 and (cuparray[0] > 12*x + y)):
                     self.write_to_sample(x, y, round(random.gauss(50, 5), 2)) #generates a random number based on gaussian distribution.) #calls write to sample 5 times because there are 5 claws that make measurements.
-                if(checkarray[1] == 1 and (cuparray[1] > 12*x + y)):
+                if(tareflags[1] == 1 and checkarray[1] == 1 and (cuparray[1] > 12*x + y)):
                     self.write_to_sample(x+3, y, round(random.gauss(50, 5), 2))
-                if(checkarray[2] == 1 and (cuparray[2] > 12*x + y)):
+                if(tareflags[2] == 1 and checkarray[2] == 1 and (cuparray[2] > 12*x + y)):
                     self.write_to_sample(x+6, y, round(random.gauss(50, 5), 2))
-                if(checkarray[3] == 1 and (cuparray[3] > 12*x + y)):
+                if(tareflags[3] == 1 and checkarray[3] == 1 and (cuparray[3] > 12*x + y)):
                     self.write_to_sample(x+9, y, round(random.gauss(50, 5), 2))
-                if(checkarray[4] == 1 and (cuparray[4] > 12*x + y)):
+                if(tareflags[4] == 1 and checkarray[4] == 1 and (cuparray[4] > 12*x + y)):
                     self.write_to_sample(x+12, y, round(random.gauss(50, 5), 2))
                 time.sleep(.1)
                 y = y+1
@@ -1155,12 +1220,17 @@ with serial.Serial() as robot: #this creates the serial object "robot" used in t
                 #okay this is a bit complicated.
                 #basically I have a "cmdstring" which is the current command I am sending to the robot.
                 #The exact string changes based on the iterator i, but the default is the claw idle 'hh'.
-                #List of states currently in app:
                 #0: move gantry in X direction
                 #1: move gantry in Y direction
-                #2: close claws
-                #3: measure weights
-                #4: open claws
+                #2: open claws
+                #3: move tray up
+                #4: close claws
+                #5: move tray down
+                #6: measure weights
+                #7: move tray up
+                #8: open claws
+                #9: move tray down
+                #10: close claws
                 cmdstring = 'hh'
                 xmove = xposarray[x] - xpos #tells the robot how many steps to move from current position.
                 ymove = yposarray[y] - ypos #these only change when x and y get iterated.
