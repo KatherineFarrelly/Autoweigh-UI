@@ -1,5 +1,5 @@
 # Autoweigh UI
- UI for the Automated soil weighing robot.
+ UI for the Automated soil weighing robot for the NC Agronomics Division.
 
 # What is this code?
 This is the UI for the Automated Soil Weighing System Robot nicknamed Autoweigh 2020.
