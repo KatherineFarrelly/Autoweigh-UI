@@ -18,6 +18,6 @@ There are two ways to run this code.
 You must have python 3 and py2exe installed on your computer to recompile the code. Once you have these installed, as well as the required dependencies (pyserial and tkinter) you can recompile the code by deleting the dist folder and then running "python setup.py py2exe" in the command line in the Autoweigh-UI folder.
 
 # Questions?
-If you have questions concerning modification of this code, contact Katherine Farrelly at KatFarrelly@protonmail.com. I am aware this readme is a bit barebones so if anything is unclear I will try to help the best I can to clarify.
+If you have questions concerning modification of this code, contact me at KatFarrelly@protonmail.com. I am aware this readme is a bit barebones so if anything is unclear I will try to help the best I can to clarify.
 
 As of 11/26/2021 I am no longer regularly maintaining this code. I will only respond to reports of critical bugs or feature requirements by the NC Agronomics Division.
